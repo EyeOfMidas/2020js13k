@@ -35,6 +35,7 @@
         var context;
         var lastTime;
         var updateIntervalId;
+        var gameTicks;
 
         var camera = { x: 0, y: 0, center: { x: 0, y: 0 }, movementSpeed: 3 };
         var isDragging = false;
@@ -59,6 +60,8 @@
             width: 2560,
             height: 2560,
         };
+
+        var quest = { x: 1400, y: 1200 };
     </script>
     <script>
         function animate() {
@@ -86,12 +89,16 @@
                 keys[i] = false;
             }
 
+            gameTicks = 0;
+
             onResize();
         }
 
         function update(delta) {
+            gameTicks++;
             updateCamera(delta);
             updateBackground(delta);
+            updateQuest(delta);
             updatePlayer(delta);
 
         }
@@ -101,6 +108,8 @@
             context.translate(-camera.x + dragDelta.x, -camera.y + dragDelta.y);
 
             drawBackground(context);
+
+            drawQuest(quest, context);
             drawPlayer(context);
 
             context.restore();
@@ -265,6 +274,10 @@
             }
         }
 
+        function updateQuest(delta) {
+            quest.y += 0.4 * Math.sin((8 * gameTicks % 360) * (Math.PI / 180));
+        }
+
         function updatePlayer(delta) {
             if (keys[KeyCode.W] || keys[KeyCode.Up]) {
                 player.y += -player.movementSpeed * delta;
@@ -306,8 +319,6 @@
                 let angle = (Math.atan2(player.target.y - player.y, player.target.x - player.x));
                 player.x += player.movementSpeed * Math.cos(angle);
                 player.y += player.movementSpeed * Math.sin(angle);
-
-
             }
 
             if (player.x > area.width - player.width / 2) {
@@ -336,6 +347,19 @@
             context.rect(-player.center.x, -player.center.y, player.width, player.height);
             context.fill();
             context.restore();
+        }
+
+        function drawQuest(quest, context) {
+            context.fillStyle = "yellow";
+            context.beginPath();
+            context.moveTo(quest.x, quest.y);
+            context.bezierCurveTo(quest.x - 25, quest.y, quest.x - 10, quest.y + 50, quest.x, quest.y + 50);
+            context.bezierCurveTo(quest.x + 10, quest.y + 50, quest.x + 25, quest.y, quest.x, quest.y);
+            context.fill();
+
+            context.beginPath();
+            context.arc(quest.x, quest.y + 70, 10, 0, 2 * Math.PI);
+            context.fill();
         }
     </script>
 
