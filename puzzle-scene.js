@@ -100,9 +100,9 @@ class Tile {
         this.width = 50;
         this.height = 50;
         this.center = { x: 25, y: 25 };
-        this.radians = 0 * (Math.PI / 180);
-        this.targetRadians = 0 * (Math.PI / 180);
-        this.piece = 1;
+        this.radians = (90 * Math.floor(4 * Math.random())) * (Math.PI / 180);
+        this.targetRadians = (90 * Math.floor(4 * Math.random())) * (Math.PI / 180);
+        this.piece = Math.floor(6 * Math.random());
         this.board = board;
         this.isHovered = false;
     }
@@ -126,6 +126,48 @@ class Tile {
         context.rect(-this.center.x, -this.center.y, this.width, this.height);
         context.fill();
         context.stroke();
+
+        context.fillStyle = "limegreen";
+        context.strokeStyle = "limegreen";
+        context.lineWidth = 4;
+
+        if (this.piece == 1) {
+            context.beginPath();
+            context.rect(- 2, -this.center.y, 4, this.height);
+            context.fill();
+        }
+        if (this.piece == 2) {
+            context.beginPath();
+            context.rect(- 2, -this.center.y, 4, 2 + this.height / 2);
+            context.fill();
+            context.beginPath();
+            context.rect(-this.center.x, -2, 2 + this.width / 2, 4);
+            context.fill();
+        }
+        if (this.piece == 3) {
+            context.beginPath();
+            context.rect(- 2, -this.center.y, 4, this.height);
+            context.fill();
+            context.beginPath();
+            context.rect(-this.center.x, -2, 2 + this.width / 2, 4);
+            context.fill();
+        }
+        if (this.piece == 4) {
+            context.beginPath();
+            context.rect(- 2, -this.center.y, 4, this.height);
+            context.fill();
+            context.beginPath();
+            context.rect(- this.center.x, -2, this.width, 4);
+            context.fill();
+        }
+        if (this.piece == 5) {
+            context.beginPath();
+            context.rect(- 2, -this.center.y, 4, 4 + this.height / 4);
+            context.fill();
+            context.beginPath();
+            context.arc(0, 0, 8, 0, 2 * Math.PI);
+            context.stroke();
+        }
         context.restore();
     }
 
