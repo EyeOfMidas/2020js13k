@@ -29,6 +29,8 @@
     <div id="game"></div>
     <script src="./KeyCode.js"></script>
     <script src="./manualtween.js"></script>
+    <script src="./overworld-scene.js"></script>
+
 
     <script>
         var canvas;
@@ -44,24 +46,9 @@
         var dragDelta = { x: 0, y: 0 };
         var keys = [];
 
-        var player = {
-            x: 1280,
-            y: 1280,
-            width: 20,
-            height: 20,
-            center: { x: 10, y: 10 },
-            angle: 90 * Math.PI / 180,
-            rotationSpeed: 3 * Math.PI / 180,
-            movementSpeed: 3,
-            target: { x: 1280, y: 1280 },
-        };
-
-        var area = {
-            width: 2560,
-            height: 2560,
-        };
-
-        var quest = { x: 1400, y: 1200 };
+        var states = [];
+        states.push(new OverworldScene());
+        var activeState = states[0];
     </script>
     <script>
         function animate() {
@@ -92,27 +79,15 @@
             gameTicks = 0;
 
             onResize();
+            activeState = states[0];
         }
 
         function update(delta) {
-            gameTicks++;
-            updateCamera(delta);
-            updateBackground(delta);
-            updateQuest(delta);
-            updatePlayer(delta);
-
+            activeState.update(delta);
         }
 
         function draw(context) {
-            context.save();
-            context.translate(-camera.x + dragDelta.x, -camera.y + dragDelta.y);
-
-            drawBackground(context);
-
-            drawQuest(quest, context);
-            drawPlayer(context);
-
-            context.restore();
+            activeState.draw(context);
         }
 
         function onResize() {
@@ -124,88 +99,45 @@
 
             camera.center.x = canvas.width / 2;
             camera.center.y = canvas.height / 2;
+            activeState.onResize();
         }
 
         function onKeyDown(event) {
             keys[event.keyCode] = true;
+            activeState.onKeyDown(event);
         }
 
         function onKeyUp(event) {
             keys[event.keyCode] = false;
+            activeState.onKeyUp(event);
         }
 
         function onMouseMove(event) {
-            if (isDragging) {
-                dragDelta.x = event.clientX - startDrag.x;
-                dragDelta.y = event.clientY - startDrag.y;
-            }
+            activeState.onMouseMove(event);
         }
 
         function onMouseDown(event) {
-            if (isDragging) {
-                return;
-            }
-            dragCompleted = false;
-            if (event.button == 0) {
-                isDragging = true;
-            }
-
-            startDrag.x = event.clientX;
-            startDrag.y = event.clientY;
-            dragDelta.x = 0;
-            dragDelta.y = 0;
-            startDrag.time = new Date().getUTCMilliseconds();
+            activeState.onMouseDown(event);
         }
 
         function onMouseUp(event) {
-            if (event.button == 2) { //startDrag.time + 100 >= new Date().getUTCMilliseconds()
-                player.target.x = camera.x + startDrag.x;
-                player.target.y = camera.y + startDrag.y;
-                return;
-            }
-
-            if (isDragging) {
-                isDragging = false;
-                dragCompleted = true;
-            }
+            activeState.onMouseUp(event);
         }
 
         function onRightClick(event) {
-            event.preventDefault();
+            activeState.onRightClick(event);
         }
 
         function onTouchStart(event) {
-            if (event.touches.length == 2) {
-                isDragging = true;
-                startDrag.x = parseInt(event.targetTouches[0].clientX);
-                startDrag.y = parseInt(event.targetTouches[0].clientY);
-                dragDelta.x = 0;
-                dragDelta.y = 0;
-                startDrag.time = new Date().getUTCMilliseconds();
-            }
+            activeState.onTouchStart(event);
         }
 
         function onTouchMove(event) {
-            if (event.touches.length == 2) {
-                dragDelta.x = parseInt(event.targetTouches[0].clientX) - startDrag.x;
-                dragDelta.y = parseInt(event.targetTouches[0].clientY) - startDrag.y;
-            }
-
+            activeState.onTouchMove(event);
         }
 
         function onTouchEnd(event) {
-            if (isDragging) {
-                isDragging = false;
-                dragCompleted = true;
-                return;
-            }
-
-            if (event.touches.length == 0) { //I've let go of all points
-                if (!isDragging && !dragCompleted) {
-                    player.target.x = camera.x + parseInt(event.changedTouches[0].clientX);
-                    player.target.y = camera.y + parseInt(event.changedTouches[0].clientY);
-                }
-            }
+            activeState.onTouchEnd(event);
         }
     </script>
 
@@ -237,130 +169,7 @@
     </script>
 
     <script>
-        function updateCamera(delta) {
 
-            let playerRatioX = (player.x - camera.x) / canvas.width;
-            if (playerRatioX < 0.3) {
-                camera.x = player.x - (0.3 * canvas.width);
-            }
-
-            if (playerRatioX > 0.7) {
-                camera.x = player.x - (0.7 * canvas.width);
-            }
-
-            let playerRatioY = (player.y - camera.y) / canvas.height;
-            if (playerRatioY < 0.3) {
-                camera.y = player.y - (0.3 * canvas.height);
-            }
-
-            if (playerRatioY > 0.7) {
-                camera.y = player.y - (0.7 * canvas.height);
-            }
-
-        }
-
-        function updateBackground(delta) {
-        }
-
-        function drawBackground(context) {
-            context.strokeStyle = "limegreen";
-            context.lineWidth = 3;
-            for (let y = 0; y < Math.floor(area.height / 128); y++) {
-                for (let x = 0; x < Math.floor(area.width / 128); x++) {
-                    context.beginPath();
-                    context.rect(x * 128, y * 128, 128, 128);
-                    context.stroke();
-                }
-            }
-        }
-
-        function updateQuest(delta) {
-            quest.y += 0.4 * Math.sin((8 * gameTicks % 360) * (Math.PI / 180));
-        }
-
-        function updatePlayer(delta) {
-            if (keys[KeyCode.W] || keys[KeyCode.Up]) {
-                player.y += -player.movementSpeed * delta;
-                player.target.y = player.y;
-            }
-
-            if (keys[KeyCode.S] || keys[KeyCode.Down]) {
-                player.y += player.movementSpeed * delta;
-                player.target.y = player.y;
-            }
-
-            if (keys[KeyCode.A] || keys[KeyCode.Left]) {
-                player.x += -player.movementSpeed * delta;
-                player.target.x = player.x;
-            }
-
-            if (keys[KeyCode.D] || keys[KeyCode.Right]) {
-                player.x += player.movementSpeed * delta;
-                player.target.x = player.x;
-            }
-
-            if (keys[KeyCode.Q]) {
-                player.angle -= player.rotationSpeed * delta;
-            }
-
-            if (keys[KeyCode.E]) {
-                player.angle += player.rotationSpeed * delta;
-            }
-
-            if (Math.abs(player.x - player.target.x) <= player.movementSpeed) {
-                player.x = player.target.x;
-            }
-
-            if (Math.abs(player.y - player.target.y) <= player.movementSpeed) {
-                player.y = player.target.y;
-            }
-
-            if (player.target.x != player.x || player.target.y != player.y) {
-                let angle = (Math.atan2(player.target.y - player.y, player.target.x - player.x));
-                player.x += player.movementSpeed * Math.cos(angle);
-                player.y += player.movementSpeed * Math.sin(angle);
-            }
-
-            if (player.x > area.width - player.width / 2) {
-                player.x = area.width - player.width / 2;
-                player.target.x = player.x;
-            }
-            if (player.x < 0 + player.width / 2) {
-                player.x = player.width / 2;
-                player.target.x = player.x;
-            }
-            if (player.y > area.height - player.height / 2) {
-                player.y = area.height - player.height / 2;
-                player.target.y = player.y;
-            }
-            if (player.y < 0 + player.height / 2) {
-                player.y = player.height / 2;
-                player.target.y = player.y;
-            }
-        }
-        function drawPlayer(context) {
-            context.save();
-            context.fillStyle = "crimson";
-            context.translate(player.x, player.y);
-            context.rotate(player.angle);
-            context.beginPath();
-            context.rect(-player.center.x, -player.center.y, player.width, player.height);
-            context.fill();
-            context.restore();
-        }
-
-        function drawQuest(quest, context) {
-            context.fillStyle = "yellow";
-            context.beginPath();
-            context.moveTo(quest.x, quest.y);
-            context.bezierCurveTo(quest.x - 25, quest.y, quest.x - 10, quest.y + 50, quest.x, quest.y + 50);
-            context.bezierCurveTo(quest.x + 10, quest.y + 50, quest.x + 25, quest.y, quest.x, quest.y);
-            context.fill();
-
-            context.beginPath();
-            context.arc(quest.x, quest.y + 70, 10, 0, 2 * Math.PI);
-            context.fill();
-        }
     </script>
 
 </body>
