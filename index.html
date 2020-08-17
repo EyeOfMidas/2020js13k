@@ -29,7 +29,9 @@
     <div id="game"></div>
     <script src="./KeyCode.js"></script>
     <script src="./manualtween.js"></script>
+    <script src="./menu-scene.js"></script>
     <script src="./overworld-scene.js"></script>
+    <script src="./puzzle-scene.js"></script>
 
 
     <script>
@@ -47,14 +49,15 @@
         var keys = [];
 
         var states = [];
+        states.push(new MenuScene());
         states.push(new OverworldScene());
+        states.push(new PuzzleScene());
         var activeState = states[0];
     </script>
     <script>
         function animate() {
             context.save();
             context.translate(0.5, 0.5);
-            clearFrame(context);
             draw(context);
             context.restore();
             requestAnimationFrame(animate);
@@ -69,7 +72,6 @@
 
         function init() {
             lastTime = new Date().getUTCMilliseconds();
-            context = canvas.getContext('2d');
 
             keys = [];
             for (let i = 0; i < 256; i++) {
@@ -78,8 +80,13 @@
 
             gameTicks = 0;
 
+            changeState(0);
+        }
+
+        function changeState(id) {
+            activeState = states[id];
+            activeState.init();
             onResize();
-            activeState = states[0];
         }
 
         function update(delta) {
@@ -87,6 +94,7 @@
         }
 
         function draw(context) {
+            clearFrame(context);
             activeState.draw(context);
         }
 
@@ -94,6 +102,7 @@
             let dpi = window.devicePixelRatio;
             canvas.width = canvas.clientWidth;
             canvas.height = canvas.clientHeight;
+            context = canvas.getContext("2d");
             context.width = canvas.clientWidth / dpi;
             context.height = canvas.clientHeight / dpi;
 

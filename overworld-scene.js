@@ -21,12 +21,36 @@ class OverworldScene {
 
     }
 
+    init() {
+        this.area = {
+            width: 2560,
+            height: 2560,
+        };
+        this.player = {
+            x: 1280,
+            y: 1280,
+            width: 20,
+            height: 20,
+            center: { x: 10, y: 10 },
+            angle: 90 * Math.PI / 180,
+            rotationSpeed: 3 * Math.PI / 180,
+            movementSpeed: 3,
+            target: { x: 1280, y: 1280 },
+        };
+
+        this.quest = { x: 1400, y: 1200 };
+    }
+
     update(delta) {
         gameTicks++;
         this.updateCamera(delta);
         this.updateBackground(delta);
         this.updateQuest(delta);
         this.updatePlayer(delta);
+
+        if (keys[KeyCode.P]) {
+            changeState(2);
+        }
     }
     draw(context) {
         context.save();
