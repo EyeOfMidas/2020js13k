@@ -39,6 +39,10 @@ class OverworldScene {
         };
 
         this.quest = { x: 1400, y: 1200 };
+
+        for (let i = 0; i < 256; i++) {
+            keys[i] = false;
+        }
     }
 
     update(delta) {
@@ -50,6 +54,10 @@ class OverworldScene {
 
         if (keys[KeyCode.P]) {
             changeState(2);
+        }
+
+        if (keys[KeyCode.Esc]) {
+            changeState(0);
         }
     }
     draw(context) {
