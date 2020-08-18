@@ -24,7 +24,8 @@ class PuzzleScene {
     }
 
     buildBoard() {
-        let currentTile = this.tiles[0];
+        let validStartTiles = this.tiles.filter(tile => tile.x == 0);
+        let currentTile = validStartTiles[Math.floor(validStartTiles.length * Math.random())];
         this.pathTiles.push(currentTile);
         let invalidTiles = [];
 
