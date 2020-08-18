@@ -10,6 +10,7 @@
             margin: 0;
             padding: 0;
             overflow: hidden;
+            background-color: darkslategray;
         }
 
         canvas {
@@ -63,10 +64,7 @@
         }
 
         function clearFrame(context) {
-            context.fillStyle = "#000000";
-            context.beginPath();
-            context.rect(0, 0, canvas.width, canvas.height);
-            context.fill();
+            context.clearRect(0, 0, canvas.width, canvas.height);
         }
 
         function init() {
@@ -93,7 +91,7 @@
         }
 
         function draw(context) {
-            clearFrame(context);
+            functionExists(activeState, "clearFrame") ? activeState.clearFrame(context) : clearFrame(context);
             activeState.draw(context);
         }
 
