@@ -26,10 +26,12 @@ class OverworldScene {
             target: { x: 1280, y: 1280 },
         };
 
-        this.quest = {
-            x: 1400, y: 1200,
-            bounds: { width: 50, height: 50 },
-        };
+        // this.quest = {
+        //     x: 1400, y: 1200,
+        //     bounds: { width: 25, height: 25 },
+        // };
+
+        this.quest = new Quest(1400, 1200);
 
         for (let i = 0; i < 256; i++) {
             keys[i] = false;
@@ -40,10 +42,10 @@ class OverworldScene {
         gameTicks++;
         this.updateCamera(delta);
         this.updateBackground(delta);
-        this.updateQuest(delta);
+        this.quest.update(delta);
         this.updatePlayer(delta);
 
-        if (this.withinBounds(this.player, this.quest)) {
+        if (this.quest.withinBounds(this.player)) {
             changeState(2);
         }
 
@@ -57,8 +59,8 @@ class OverworldScene {
 
         this.drawBackground(context);
 
-        this.drawQuest(this.quest, context);
         this.drawPlayer(context);
+        this.quest.draw(context);
 
         context.restore();
     }
@@ -97,23 +99,6 @@ class OverworldScene {
                 context.stroke();
             }
         }
-    }
-
-    updateQuest(delta) {
-        this.quest.y += 0.4 * Math.sin((8 * gameTicks % 360) * (Math.PI / 180));
-    }
-
-    drawQuest(quest, context) {
-        context.fillStyle = Color.White;
-        context.beginPath();
-        context.moveTo(quest.x, quest.y);
-        context.bezierCurveTo(quest.x - 25, quest.y, quest.x - 10, quest.y + 50, quest.x, quest.y + 50);
-        context.bezierCurveTo(quest.x + 10, quest.y + 50, quest.x + 25, quest.y, quest.x, quest.y);
-        context.fill();
-
-        context.beginPath();
-        context.arc(quest.x, quest.y + 70, 10, 0, 2 * Math.PI);
-        context.fill();
     }
 
     updatePlayer(delta) {
@@ -265,9 +250,39 @@ class OverworldScene {
             }
         }
     }
+}
 
-    withinBounds(player, quest) {
-        return player.x > quest.x && player.y > quest.y &&
-            player.x < quest.x + quest.bounds.width && player.y < quest.y + quest.bounds.height;
+class Quest {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.bounds = { width: 25, height: 25 };
+    }
+
+    update(delta) {
+        this.y += 0.4 * Math.sin((8 * gameTicks % 360) * (Math.PI / 180));
+    }
+
+    draw(context) {
+        context.fillStyle = Color.White;
+        context.beginPath();
+        context.moveTo(this.x, this.y - 70);
+        context.bezierCurveTo(this.x - 25, this.y - 70, this.x - 10, this.y - 20, this.x, this.y - 20);
+        context.bezierCurveTo(this.x + 10, this.y - 20, this.x + 25, this.y - 70, this.x, this.y - 70);
+        context.fill();
+
+        context.beginPath();
+        context.arc(this.x, this.y + 0, 10, 0, 2 * Math.PI);
+        context.fill();
+
+        // context.strokeStyle = Color.LightBlue;
+        // context.beginPath();
+        // context.rect(this.x - (this.bounds.width / 2), this.y - (this.bounds.height / 2), this.bounds.width, this.bounds.height);
+        // context.stroke();
+    }
+
+    withinBounds(player) {
+        return player.x > this.x - (this.bounds.width / 2) && player.y > this.y - (this.bounds.height / 2) &&
+            player.x < (this.x - (this.bounds.width / 2)) + this.bounds.width && player.y < (this.y - (this.bounds.height / 2)) + this.bounds.height;
     }
 }
