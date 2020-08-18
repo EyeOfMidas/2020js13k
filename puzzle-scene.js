@@ -24,6 +24,7 @@ class PuzzleScene {
     }
 
     buildPath() {
+        this.pathTiles = [];
         let validStartTiles = this.tiles.filter(tile => tile.x == 0);
         let currentTile = validStartTiles[Math.floor(validStartTiles.length * Math.random())];
         this.pathTiles.push(currentTile);
@@ -87,7 +88,16 @@ class PuzzleScene {
             }
         }
 
-        this.pathTiles[this.pathTiles.length - 1].piece = TileType.Node;
+        let pentultimateTile = this.pathTiles[this.pathTiles.length - 2];
+        let lastTile = this.pathTiles[this.pathTiles.length - 1];
+        lastTile.piece = TileType.Node;
+        if (lastTile.x > pentultimateTile.x && lastTile.y == pentultimateTile.y) {
+            lastTile.goal = [270];
+        } else if (lastTile.x == pentultimateTile.x && lastTile.y < pentultimateTile.y) {
+            lastTile.goal = [180];
+        } else if (lastTile.x == pentultimateTile.x && lastTile.y > pentultimateTile.y) {
+            lastTile.goal = [0];
+        }
     }
 
     isValidNearby(tile, currentTile, invalidTiles) {
@@ -215,16 +225,8 @@ class Tile {
     }
 
     draw(context) {
-        context.fillStyle = "gray";
-        context.strokeStyle = "gray";
-        if (activeState.pathTiles.includes(this)) {
-            context.fillStyle = "blue";
-            context.strokeStyle = "blue";
-
-            if (this.isOrientedCorrectly()) {
-                context.strokeStyle = "lightblue";
-            }
-        }
+        context.fillStyle = "forestgreen";
+        context.strokeStyle = "forestgreen";
         if (this.isHovered) {
             context.strokeStyle = "yellow";
         }
@@ -236,9 +238,14 @@ class Tile {
         context.fill();
         context.stroke();
 
-        context.fillStyle = "limegreen";
-        context.strokeStyle = "limegreen";
+        context.fillStyle = "gold";
+        context.strokeStyle = "gold";
         context.lineWidth = 4;
+
+        if (this.isOrientedCorrectly()) {
+            context.fillStyle = "limegreen";
+            context.strokeStyle = "limegreen";
+        }
 
         switch (this.piece) {
             case TileType.Straight:
