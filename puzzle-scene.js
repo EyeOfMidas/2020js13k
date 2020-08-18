@@ -8,6 +8,7 @@ class PuzzleScene {
         };
 
         this.tiles = [];
+        this.pathTiles = [];
     }
 
     init() {
@@ -18,6 +19,55 @@ class PuzzleScene {
                 this.tiles.push(new Tile(this.board, x, y));
             }
         }
+
+        this.buildBoard();
+    }
+
+    buildBoard() {
+        let currentTile = this.tiles[0];
+        this.pathTiles.push(currentTile);
+        let invalidTiles = [];
+
+        while (currentTile.x < 7) {
+            let validPathChoices = this.tiles.filter(tile => this.isValidNearby(tile, currentTile, invalidTiles));
+            if (validPathChoices.length == 0) {
+                this.pathTiles.splice(this.pathTiles.findIndex(tile => tile == currentTile), 1);
+                invalidTiles.push(currentTile);
+                currentTile = this.pathTiles[this.pathTiles.length - 1];
+                continue;
+            }
+            let randomTile = validPathChoices[Math.floor(validPathChoices.length * Math.random())];
+            currentTile = randomTile;
+            this.pathTiles.push(currentTile);
+        }
+
+    }
+
+    isValidNearby(tile, currentTile, invalidTiles) {
+        if (invalidTiles.includes(tile)) {
+            return false;
+        }
+        if (this.pathTiles.includes(tile)) {
+            return false;
+        }
+
+        //TOP
+        if (tile.x == currentTile.x && tile.y == currentTile.y - 1) {
+            return true;
+        }
+        //LEFT
+        if (tile.x == currentTile.x - 1 && tile.y == currentTile.y) {
+            return true;
+        }
+        //BOTTOM
+        if (tile.x == currentTile.x && tile.y == currentTile.y + 1) {
+            return true;
+        }
+        //RIGHT
+        if (tile.x == currentTile.x + 1 && tile.y == currentTile.y) {
+            return true;
+        }
+        return false;
     }
 
     update(delta) {
@@ -57,13 +107,6 @@ class PuzzleScene {
         for (let tileIndex in this.tiles) {
             this.tiles[tileIndex].isHovered = false;
         }
-
-        let boardOffsetX = event.clientX - 50;
-        let boardOffsetY = event.clientY - 50;
-
-        let x = Math.floor(boardOffsetX / 50);
-        let y = Math.floor(boardOffsetY / 50);
-
 
         let hoveredTile = this.tiles.find(tile => tile.isMouseOver(event));
 
@@ -116,6 +159,10 @@ class Tile {
     draw(context) {
         context.fillStyle = "gray";
         context.strokeStyle = "gray";
+        if (activeState.pathTiles.includes(this)) {
+            context.fillStyle = "blue";
+            context.strokeStyle = "blue";
+        }
         if (this.isHovered) {
             context.strokeStyle = "yellow";
         }
