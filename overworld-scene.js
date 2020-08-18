@@ -82,14 +82,13 @@ class OverworldScene {
         if (playerRatioY > 0.7) {
             this.camera.y = this.player.y - (0.7 * canvas.height);
         }
-
     }
 
     updateBackground(delta) {
     }
 
     drawBackground(context) {
-        context.strokeStyle = "limegreen";
+        context.strokeStyle = Color.DarkGray;
         context.lineWidth = 3;
         for (let y = 0; y < Math.floor(this.area.height / 128); y++) {
             for (let x = 0; x < Math.floor(this.area.width / 128); x++) {
@@ -105,7 +104,7 @@ class OverworldScene {
     }
 
     drawQuest(quest, context) {
-        context.fillStyle = "yellow";
+        context.fillStyle = Color.White;
         context.beginPath();
         context.moveTo(quest.x, quest.y);
         context.bezierCurveTo(quest.x - 25, quest.y, quest.x - 10, quest.y + 50, quest.x, quest.y + 50);
@@ -179,7 +178,7 @@ class OverworldScene {
     }
     drawPlayer(context) {
         context.save();
-        context.fillStyle = "crimson";
+        context.fillStyle = Color.LightBlue;
         context.translate(this.player.x, this.player.y);
         context.rotate(this.player.angle);
         context.beginPath();

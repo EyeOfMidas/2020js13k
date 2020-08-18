@@ -15,6 +15,12 @@ class MenuScene {
         this.playButton.update(delta);
     }
     draw(context) {
+        context.fillStyle = Color.LightBlue;
+        context.textAlign = "center";
+        context.font = "48px Trebuchet MS";
+        context.fillText("404", canvas.width / 2, (canvas.height / 4));
+        context.font = "18px Trebuchet MS";
+        context.fillText("Theme (not) Found", canvas.width / 2, (canvas.height / 4) + 20);
         this.playButton.draw(context);
     }
 
@@ -51,18 +57,21 @@ class Button {
     }
 
     draw(context) {
-        context.fillStyle = "forestgreen";
+        context.fillStyle = Color.DarkBlue;
         if (this.isHovered) {
-            context.fillStyle = "limeGreen";
+            context.fillStyle = Color.LightGray;
         }
         context.save();
         context.translate(this.x, this.y);
         context.beginPath();
         context.rect(-this.width / 2, -this.height / 2, this.width, this.height);
         context.fill();
-        context.fillStyle = "gold";
+        context.fillStyle = Color.LightBlue;
+        if (this.isHovered) {
+            context.fillStyle = Color.White;
+        }
         context.textAlign = "center";
-        context.font = "48px Arial";
+        context.font = "48px Trebuchet MS";
         context.fillText(this.text, 0, 10);
         context.restore();
 

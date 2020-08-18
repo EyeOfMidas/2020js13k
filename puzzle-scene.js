@@ -208,10 +208,10 @@ class Tile {
     }
 
     draw(context) {
-        context.fillStyle = "forestgreen";
-        context.strokeStyle = "forestgreen";
+        context.fillStyle = Color.DarkGray;
+        context.strokeStyle = Color.DarkGray;
         if (this.isHovered) {
-            context.strokeStyle = "yellow";
+            context.strokeStyle = Color.LightGray;
         }
         context.save();
         context.translate((this.x * this.width) + this.board.offset.x + (this.x * 3), (this.y * this.height) + this.board.offset.y + (this.y * 3));
@@ -221,13 +221,13 @@ class Tile {
         context.fill();
         context.stroke();
 
-        context.fillStyle = "gold";
-        context.strokeStyle = "gold";
+        context.fillStyle = Color.DarkBlue;
+        context.strokeStyle = Color.DarkBlue;
         context.lineWidth = 4;
 
         if (this.isOrientedCorrectly()) {
-            context.fillStyle = "limegreen";
-            context.strokeStyle = "limegreen";
+            context.fillStyle = Color.LightBlue;
+            context.strokeStyle = Color.LightBlue;
         }
 
         switch (this.piece) {
