@@ -1,27 +1,15 @@
 class OverworldScene {
 
     constructor() {
-        this.area = {
-            width: 2560,
-            height: 2560,
-        };
-        this.player = {
-            x: 1280,
-            y: 1280,
-            width: 20,
-            height: 20,
-            center: { x: 10, y: 10 },
-            angle: 90 * Math.PI / 180,
-            rotationSpeed: 3 * Math.PI / 180,
-            movementSpeed: 3,
-            target: { x: 1280, y: 1280 },
-        };
-
-        this.quest = { x: 1400, y: 1200 };
-
+        this.camera = {};
+        this.area = {};
+        this.player = {};
+        this.quest = {};
     }
 
     init() {
+        this.camera = { x: 0, y: 0, center: { x: 0, y: 0 }, movementSpeed: 3 };
+
         this.area = {
             width: 2560,
             height: 2560,
@@ -38,7 +26,10 @@ class OverworldScene {
             target: { x: 1280, y: 1280 },
         };
 
-        this.quest = { x: 1400, y: 1200 };
+        this.quest = {
+            x: 1400, y: 1200,
+            bounds: { width: 50, height: 50 },
+        };
 
         for (let i = 0; i < 256; i++) {
             keys[i] = false;
@@ -52,7 +43,7 @@ class OverworldScene {
         this.updateQuest(delta);
         this.updatePlayer(delta);
 
-        if (keys[KeyCode.P]) {
+        if (this.withinBounds(this.player, this.quest)) {
             changeState(2);
         }
 
@@ -62,7 +53,7 @@ class OverworldScene {
     }
     draw(context) {
         context.save();
-        context.translate(-camera.x + dragDelta.x, -camera.y + dragDelta.y);
+        context.translate(-this.camera.x + dragDelta.x, -this.camera.y + dragDelta.y);
 
         this.drawBackground(context);
 
@@ -74,22 +65,22 @@ class OverworldScene {
 
     updateCamera(delta) {
 
-        let playerRatioX = (this.player.x - camera.x) / canvas.width;
+        let playerRatioX = (this.player.x - this.camera.x) / canvas.width;
         if (playerRatioX < 0.3) {
-            camera.x = this.player.x - (0.3 * canvas.width);
+            this.camera.x = this.player.x - (0.3 * canvas.width);
         }
 
         if (playerRatioX > 0.7) {
-            camera.x = this.player.x - (0.7 * canvas.width);
+            this.camera.x = this.player.x - (0.7 * canvas.width);
         }
 
-        let playerRatioY = (this.player.y - camera.y) / canvas.height;
+        let playerRatioY = (this.player.y - this.camera.y) / canvas.height;
         if (playerRatioY < 0.3) {
-            camera.y = this.player.y - (0.3 * canvas.height);
+            this.camera.y = this.player.y - (0.3 * canvas.height);
         }
 
         if (playerRatioY > 0.7) {
-            camera.y = this.player.y - (0.7 * canvas.height);
+            this.camera.y = this.player.y - (0.7 * canvas.height);
         }
 
     }
@@ -198,18 +189,14 @@ class OverworldScene {
     }
 
     onResize() {
-    }
-
-    onKeyDown(event) {
-    }
-
-    onKeyUp(event) {
+        this.camera.center.x = canvas.width / 2;
+        this.camera.center.y = canvas.height / 2;
     }
 
     onMouseUp(event) {
         if (event.button == 2) { //startDrag.time + 100 >= new Date().getUTCMilliseconds()
-            this.player.target.x = camera.x + startDrag.x;
-            this.player.target.y = camera.y + startDrag.y;
+            this.player.target.x = this.camera.x + startDrag.x;
+            this.player.target.y = this.camera.y + startDrag.y;
             return;
         }
 
@@ -274,9 +261,14 @@ class OverworldScene {
 
         if (event.touches.length == 0) { //I've let go of all points
             if (!isDragging && !dragCompleted) {
-                this.player.target.x = camera.x + parseInt(event.changedTouches[0].clientX);
-                this.player.target.y = camera.y + parseInt(event.changedTouches[0].clientY);
+                this.player.target.x = this.camera.x + parseInt(event.changedTouches[0].clientX);
+                this.player.target.y = this.camera.y + parseInt(event.changedTouches[0].clientY);
             }
         }
+    }
+
+    withinBounds(player, quest) {
+        return player.x > quest.x && player.y > quest.y &&
+            player.x < quest.x + quest.bounds.width && player.y < quest.y + quest.bounds.height;
     }
 }

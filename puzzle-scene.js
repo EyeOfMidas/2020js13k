@@ -134,6 +134,11 @@ class PuzzleScene {
         if (keys[KeyCode.Esc]) {
             changeState(1);
         }
+
+        if (this.pathTiles.filter(tile => !tile.isOrientedCorrectly()).length == 0) {
+            alert("You win!");
+            changeState(1);
+        }
     }
     draw(context) {
         for (let tileIndex in this.tiles) {
@@ -143,12 +148,6 @@ class PuzzleScene {
 
     onResize() {
         this.board.offset = { x: (canvas.width / 2) - (this.board.width * 50) / 2, y: (canvas.height / 2) - (this.board.height * 50) / 2 };
-    }
-
-    onKeyDown(event) {
-    }
-
-    onKeyUp(event) {
     }
 
     onMouseUp(event) {
@@ -173,24 +172,8 @@ class PuzzleScene {
         }
     }
 
-    onMouseDown(event) {
-    }
-
-
     onRightClick(event) {
         event.preventDefault();
-    }
-
-    onTouchStart(event) {
-
-    }
-
-    onTouchMove(event) {
-
-    }
-
-    onTouchEnd(event) {
-
     }
 }
 
