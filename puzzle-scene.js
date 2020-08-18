@@ -20,10 +20,10 @@ class PuzzleScene {
             }
         }
 
-        this.buildBoard();
+        this.buildPath();
     }
 
-    buildBoard() {
+    buildPath() {
         let validStartTiles = this.tiles.filter(tile => tile.x == 0);
         let currentTile = validStartTiles[Math.floor(validStartTiles.length * Math.random())];
         this.pathTiles.push(currentTile);
@@ -42,6 +42,52 @@ class PuzzleScene {
             this.pathTiles.push(currentTile);
         }
 
+        let startTile = this.pathTiles[0];
+        let nextTile = this.pathTiles[1];
+        startTile.piece = TileType.Node;
+        if (startTile.x < nextTile.x && startTile.y == nextTile.y) {
+            startTile.goal = [90];
+        } else if (startTile.x == nextTile.x && startTile.y < nextTile.y) {
+            startTile.goal = [180];
+        } else if (startTile.x == nextTile.x && startTile.y > nextTile.y) {
+            startTile.goal = [0];
+        }
+
+        for (let i = 1; i < this.pathTiles.length - 1; i++) {
+            let previousTile = this.pathTiles[i - 1];
+            let currentTile = this.pathTiles[i];
+            let nextTile = this.pathTiles[i + 1];
+            currentTile.piece = TileType.Straight;
+            if (previousTile.x == nextTile.x && previousTile.y != nextTile.y) {
+                currentTile.goal = [0, 180];
+            } else if (previousTile.x != nextTile.x && previousTile.y == nextTile.y) {
+                currentTile.goal = [90, 270];
+            } else if (previousTile.x != nextTile.x && previousTile.y != nextTile.y) {
+                currentTile.piece = TileType.Corner;
+                let prev = [previousTile.x - currentTile.x, previousTile.y - currentTile.y].join(', ');
+                let next = [nextTile.x - currentTile.x, nextTile.y - currentTile.y].join(', ');
+
+                if (
+                    prev == "0, -1" && next == "-1, 0" ||
+                    next == "0, -1" && prev == "-1, 0") {
+                    currentTile.goal = [0];
+                } else if (
+                    prev == "0, -1" && next == "1, 0" ||
+                    next == "0, -1" && prev == "1, 0") {
+                    currentTile.goal = [90];
+                } else if (
+                    prev == "1, 0" && next == "0, 1" ||
+                    next == "1, 0" && prev == "0, 1") {
+                    currentTile.goal = [180];
+                } else if (
+                    prev == "-1, 0" && next == "0, 1" ||
+                    next == "-1, 0" && prev == "0, 1") {
+                    currentTile.goal = [270];
+                }
+            }
+        }
+
+        this.pathTiles[this.pathTiles.length - 1].piece = TileType.Node;
     }
 
     isValidNearby(tile, currentTile, invalidTiles) {
@@ -101,6 +147,7 @@ class PuzzleScene {
             this.tiles.splice(this.tiles.findIndex(tile => tile == clickedTile), 1);
             this.tiles.push(clickedTile);
             clickedTile.targetRadians += 90 * (Math.PI / 180);
+            clickedTile.targetRadians %= (360 * (Math.PI / 180));
         }
     }
 
@@ -137,6 +184,14 @@ class PuzzleScene {
     }
 }
 
+var TileType = {};
+TileType.Blank = 0;
+TileType.Straight = 1;
+TileType.Corner = 2;
+TileType.Tee = 3;
+TileType.Cross = 4;
+TileType.Node = 5;
+
 class Tile {
     constructor(board, x, y) {
         this.x = x;
@@ -144,16 +199,18 @@ class Tile {
         this.width = 50;
         this.height = 50;
         this.center = { x: 25, y: 25 };
-        this.radians = (90 * Math.floor(4 * Math.random())) * (Math.PI / 180);
-        this.targetRadians = (90 * Math.floor(4 * Math.random())) * (Math.PI / 180);
-        this.piece = Math.floor(6 * Math.random());
+        this.radians = 0;//(90 * Math.floor(4 * Math.random())) * (Math.PI / 180);
+        this.targetRadians = 0;//(90 * Math.floor(4 * Math.random())) * (Math.PI / 180);
+        this.goal = [];
+        this.piece = Math.floor(5 * Math.random());
         this.board = board;
         this.isHovered = false;
     }
 
     update(delta) {
         if (this.targetRadians != this.radians) {
-            this.radians += Math.min((9 * (Math.PI / 180)), this.targetRadians - this.radians);
+            this.radians += (9 * (Math.PI / 180));
+            this.radians %= (360 * (Math.PI / 180));
         }
     }
 
@@ -163,6 +220,10 @@ class Tile {
         if (activeState.pathTiles.includes(this)) {
             context.fillStyle = "blue";
             context.strokeStyle = "blue";
+
+            if (this.isOrientedCorrectly()) {
+                context.strokeStyle = "lightblue";
+            }
         }
         if (this.isHovered) {
             context.strokeStyle = "yellow";
@@ -179,42 +240,47 @@ class Tile {
         context.strokeStyle = "limegreen";
         context.lineWidth = 4;
 
-        if (this.piece == 1) {
-            context.beginPath();
-            context.rect(- 2, -this.center.y, 4, this.height);
-            context.fill();
-        }
-        if (this.piece == 2) {
-            context.beginPath();
-            context.rect(- 2, -this.center.y, 4, 2 + this.height / 2);
-            context.fill();
-            context.beginPath();
-            context.rect(-this.center.x, -2, 2 + this.width / 2, 4);
-            context.fill();
-        }
-        if (this.piece == 3) {
-            context.beginPath();
-            context.rect(- 2, -this.center.y, 4, this.height);
-            context.fill();
-            context.beginPath();
-            context.rect(-this.center.x, -2, 2 + this.width / 2, 4);
-            context.fill();
-        }
-        if (this.piece == 4) {
-            context.beginPath();
-            context.rect(- 2, -this.center.y, 4, this.height);
-            context.fill();
-            context.beginPath();
-            context.rect(- this.center.x, -2, this.width, 4);
-            context.fill();
-        }
-        if (this.piece == 5) {
-            context.beginPath();
-            context.rect(- 2, -this.center.y, 4, 4 + this.height / 4);
-            context.fill();
-            context.beginPath();
-            context.arc(0, 0, 8, 0, 2 * Math.PI);
-            context.stroke();
+        switch (this.piece) {
+            case TileType.Straight:
+                context.beginPath();
+                context.rect(- 2, -this.center.y, 4, this.height);
+                context.fill();
+                break;
+            case TileType.Corner:
+                context.beginPath();
+                context.rect(- 2, -this.center.y, 4, 2 + this.height / 2);
+                context.fill();
+                context.beginPath();
+                context.rect(-this.center.x, -2, 2 + this.width / 2, 4);
+                context.fill();
+                break;
+            case TileType.Tee:
+                context.beginPath();
+                context.rect(- 2, -this.center.y, 4, this.height);
+                context.fill();
+                context.beginPath();
+                context.rect(-this.center.x, -2, 2 + this.width / 2, 4);
+                context.fill();
+                break;
+            case TileType.Cross:
+                context.beginPath();
+                context.rect(- 2, -this.center.y, 4, this.height);
+                context.fill();
+                context.beginPath();
+                context.rect(- this.center.x, -2, this.width, 4);
+                context.fill();
+                break;
+            case TileType.Node:
+                context.beginPath();
+                context.rect(- 2, -this.center.y, 4, 4 + this.height / 4);
+                context.fill();
+                context.beginPath();
+                context.arc(0, 0, 8, 0, 2 * Math.PI);
+                context.stroke();
+                break;
+            case TileType.Blank:
+            default:
+                break;
         }
         context.restore();
     }
@@ -227,5 +293,9 @@ class Tile {
         let y = Math.floor(boardOffsetY / this.height);
 
         return this.x == x && this.y == y;
+    }
+
+    isOrientedCorrectly() {
+        return this.goal.map(value => value * (Math.PI / 180)).includes(this.radians);
     }
 }
