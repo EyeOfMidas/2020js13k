@@ -24,8 +24,9 @@ class MenuScene {
     }
 
     onMouseMove(event) {
+        this.playButton.isHovered = false;
         if (this.playButton.isMouseOver(event)) {
-            console.log("over button");
+            this.playButton.isHovered = true;
         }
     }
 
@@ -44,21 +45,25 @@ class Button {
         this.height = 80;
         this.text = text;
         this.handler = handler;
+        this.isHovered = false;
     }
     update(delta) {
     }
 
     draw(context) {
-        context.fillStyle = "crimson"
+        context.fillStyle = "forestgreen";
+        if (this.isHovered) {
+            context.fillStyle = "limeGreen";
+        }
         context.save();
         context.translate(this.x, this.y);
         context.beginPath();
         context.rect(-this.width / 2, -this.height / 2, this.width, this.height);
         context.fill();
-        context.fillStyle = "black";
+        context.fillStyle = "gold";
         context.textAlign = "center";
         context.font = "48px Arial";
-        context.fillText(this.text, 0, 0);
+        context.fillText(this.text, 0, 10);
         context.restore();
 
     }
