@@ -9,9 +9,11 @@ class PuzzleScene {
 
         this.tiles = [];
         this.pathTiles = [];
+        this.isWon = false;
     }
 
     init() {
+        this.isWon = false;
         this.tiles = [];
         this.board.offset = { x: (canvas.width / 2) - (this.board.width * 50) / 2, y: (canvas.height / 2) - (this.board.height * 50) / 2 };
         for (let y = 0; y < this.board.height; y++) {
@@ -141,10 +143,14 @@ class PuzzleScene {
         if (keys[KeyCode.Esc]) {
             changeState(1);
         }
-
+        if (this.isWon) {
+            return;
+        }
         if (this.pathTiles.filter(tile => !tile.isOrientedCorrectly()).length == 0) {
-            alert("You win!");
-            changeState(1);
+            this.isWon = true;
+            setTimeout(() => {
+                changeState(1);
+            }, 500);
         }
     }
     draw(context) {
@@ -158,6 +164,9 @@ class PuzzleScene {
     }
 
     onMouseUp(event) {
+        if (this.isWon) {
+            return;
+        }
         let clickedTile = this.tiles.find(tile => tile.isMouseOver(event));
         if (clickedTile) {
             this.tiles.splice(this.tiles.findIndex(tile => tile == clickedTile), 1);
@@ -168,6 +177,9 @@ class PuzzleScene {
     }
 
     onMouseMove(event) {
+        if (this.isWon) {
+            return;
+        }
         for (let tileIndex in this.tiles) {
             this.tiles[tileIndex].isHovered = false;
         }

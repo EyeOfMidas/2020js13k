@@ -31,14 +31,18 @@ class MenuScene {
 
     onMouseMove(event) {
         this.playButton.isHovered = false;
+        document.body.style.cursor = "default";
         if (this.playButton.isMouseOver(event)) {
             this.playButton.isHovered = true;
+            document.body.style.cursor = "pointer";
+
         }
     }
 
     onMouseUp(event) {
         if (this.playButton.isMouseOver(event)) {
             changeState(1);
+            document.body.style.cursor = "default";
         }
     }
 }
