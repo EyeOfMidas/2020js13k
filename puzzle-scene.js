@@ -54,6 +54,7 @@ class PuzzleScene {
         } else if (startTile.x == nextTile.x && startTile.y > nextTile.y) {
             startTile.goal = [0];
         }
+        startTile.targetRadians = startTile.goal[0] * (Math.PI / 180);
 
         for (let i = 1; i < this.pathTiles.length - 1; i++) {
             let previousTile = this.pathTiles[i - 1];
@@ -88,6 +89,10 @@ class PuzzleScene {
                     currentTile.goal = [270];
                 }
             }
+            currentTile.targetRadians = (90 + currentTile.goal[0]) * (Math.PI / 180);
+            currentTile.targetRadians %= 360 * (Math.PI / 180);
+
+
         }
 
         let pentultimateTile = this.pathTiles[this.pathTiles.length - 2];
