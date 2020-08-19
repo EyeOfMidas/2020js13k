@@ -46,6 +46,7 @@ class PuzzleScene {
         let startTile = this.pathTiles[0];
         let nextTile = this.pathTiles[1];
         startTile.piece = TileType.Node;
+        startTile.isPowered = true;
         if (startTile.x < nextTile.x && startTile.y == nextTile.y) {
             startTile.goal = [90];
         } else if (startTile.x == nextTile.x && startTile.y < nextTile.y) {
@@ -57,6 +58,7 @@ class PuzzleScene {
         for (let i = 1; i < this.pathTiles.length - 1; i++) {
             let previousTile = this.pathTiles[i - 1];
             let currentTile = this.pathTiles[i];
+            currentTile.isPowered = true;
             let nextTile = this.pathTiles[i + 1];
             currentTile.piece = TileType.Straight;
             if (previousTile.x == nextTile.x && previousTile.y != nextTile.y) {
@@ -198,6 +200,8 @@ class Tile {
         this.piece = Math.floor(5 * Math.random());
         this.board = board;
         this.isHovered = false;
+        this.isPowered = false;
+        this.powerPellets = [];
     }
 
     update(delta) {
@@ -205,6 +209,16 @@ class Tile {
             this.radians += (9 * (Math.PI / 180));
             this.radians %= (360 * (Math.PI / 180));
         }
+        for (let i = 0; i < this.powerPellets.length; i++) {
+            let pellet = this.powerPellets[i];
+            pellet.lifetime -= delta * 10;
+        }
+
+        if (this.powerPellets.length == 0) {
+            this.powerPellets.push({ lifetime: 500 });
+        }
+
+        this.powerPellets = this.powerPellets.filter(pellet => pellet.lifetime > 0);
     }
 
     draw(context) {
@@ -271,6 +285,18 @@ class Tile {
             case TileType.Blank:
             default:
                 break;
+        }
+
+        if (this.isPowered && this.isOrientedCorrectly()) {
+            context.fillStyle = Color.White;
+            for (let i = 0; i < this.powerPellets.length; i++) {
+                let pellet = this.powerPellets[i];
+                if (this.piece == TileType.Straight) {
+                    context.beginPath();
+                    context.arc(0, ((1 - pellet.lifetime / 500) * -(2 * this.center.y) + this.center.y), 2, 0, 2 * Math.PI);
+                    context.fill();
+                }
+            }
         }
         context.restore();
     }
