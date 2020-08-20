@@ -11,6 +11,7 @@ class PuzzleScene {
         this.pathTiles = [];
         this.isWon = false;
         this.splashText = new SplashText();
+        this.splashTextTweenId = -1;
     }
 
     init() {
@@ -153,10 +154,10 @@ class PuzzleScene {
         }
         if (this.pathTiles.filter(tile => !tile.isOrientedCorrectly()).length == 0) {
             this.isWon = true;
-            Tween.create(this.splashText, { x: canvas.width / 2 }, 3000, Tween.Easing.Elastic.EaseOut, () => {
+            this.splashTextTweenId = Tween.create(this.splashText, { x: canvas.width / 2 }, 3000, Tween.Easing.Elastic.EaseOut, () => {
                 setTimeout(() => {
                     changeState(1);
-                }, 2000);
+                }, 1000);
             });
 
         }
@@ -182,6 +183,8 @@ class PuzzleScene {
 
     onMouseUp(event) {
         if (this.isWon) {
+            Tween.cancel(this.splashTextTweenId);
+            changeState(1);
             return;
         }
         let clickedTile = this.tiles.find(tile => tile.isMouseOver(event));
