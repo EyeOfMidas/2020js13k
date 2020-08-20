@@ -45,6 +45,13 @@ class MenuScene {
             document.body.style.cursor = "default";
         }
     }
+
+    onTouchEnd(event) {
+        if (this.playButton.isTouchOver(event)) {
+            changeState(1);
+            document.body.style.cursor = "default";
+        }
+    }
 }
 
 class Button {
@@ -84,5 +91,10 @@ class Button {
     isMouseOver(event) {
         return event.clientX > this.x - (this.width / 2) && event.clientX < this.x + this.width - (this.width / 2) &&
             event.clientY > this.y - (this.height / 2) && event.clientY < this.y + this.height - (this.height / 2);
+    }
+
+    isTouchOver(event) {
+        return event.changedTouches[0].clientX > this.x - (this.width / 2) && event.changedTouches[0].clientX < this.x + this.width - (this.width / 2) &&
+            event.changedTouches[0].clientY > this.y - (this.height / 2) && event.changedTouches[0].clientY < this.y + this.height - (this.height / 2);
     }
 }

@@ -36,6 +36,9 @@ class OverworldScene {
         for (let i = 0; i < 256; i++) {
             keys[i] = false;
         }
+
+        dragCompleted = false;
+        isDragging = false;
     }
 
     update(delta) {
@@ -66,7 +69,9 @@ class OverworldScene {
     }
 
     updateCamera(delta) {
-
+        if (dragCompleted) {
+            return;
+        }
         let playerRatioX = (this.player.x - this.camera.x) / canvas.width;
         if (playerRatioX < 0.3) {
             this.camera.x = this.player.x - (0.3 * canvas.width);
@@ -178,16 +183,20 @@ class OverworldScene {
     }
 
     onMouseUp(event) {
-        if (event.button == 2) { //startDrag.time + 100 >= new Date().getUTCMilliseconds()
-            this.player.target.x = this.camera.x + startDrag.x;
-            this.player.target.y = this.camera.y + startDrag.y;
-            return;
-        }
-
         if (isDragging) {
             isDragging = false;
             dragCompleted = true;
+            this.camera.x -= dragDelta.x;
+            this.camera.y -= dragDelta.y;
+            dragDelta.x = 0;
+            dragDelta.y = 0;
         }
+        if (event.button == 2) { //startDrag.time + 100 >= new Date().getUTCMilliseconds()
+            this.player.target.x = this.camera.x + event.clientX;
+            this.player.target.y = this.camera.y + event.clientY;
+            return;
+        }
+
     }
 
     onMouseMove(event) {
@@ -198,19 +207,17 @@ class OverworldScene {
     }
 
     onMouseDown(event) {
-        if (isDragging) {
-            return;
-        }
-        dragCompleted = false;
         if (event.button == 0) {
             isDragging = true;
+            startDrag.x = event.clientX;
+            startDrag.y = event.clientY;
+            dragDelta.x = 0;
+            dragDelta.y = 0;
+            startDrag.time = new Date().getUTCMilliseconds();
+            return;
         }
 
-        startDrag.x = event.clientX;
-        startDrag.y = event.clientY;
-        dragDelta.x = 0;
-        dragDelta.y = 0;
-        startDrag.time = new Date().getUTCMilliseconds();
+        dragCompleted = false;
     }
 
 
@@ -219,31 +226,32 @@ class OverworldScene {
     }
 
     onTouchStart(event) {
-        if (event.touches.length == 2) {
-            isDragging = true;
-            startDrag.x = parseInt(event.targetTouches[0].clientX);
-            startDrag.y = parseInt(event.targetTouches[0].clientY);
-            dragDelta.x = 0;
-            dragDelta.y = 0;
-            startDrag.time = new Date().getUTCMilliseconds();
-        }
+        startDrag.x = parseInt(event.targetTouches[0].clientX);
+        startDrag.y = parseInt(event.targetTouches[0].clientY);
+        dragDelta.x = 0;
+        dragDelta.y = 0;
+        startDrag.time = new Date().getUTCMilliseconds();
+        dragCompleted = false;
     }
 
     onTouchMove(event) {
-        if (event.touches.length == 2) {
-            dragDelta.x = parseInt(event.targetTouches[0].clientX) - startDrag.x;
-            dragDelta.y = parseInt(event.targetTouches[0].clientY) - startDrag.y;
-        }
+        isDragging = true;
+        dragDelta.x = parseInt(event.targetTouches[0].clientX) - startDrag.x;
+        dragDelta.y = parseInt(event.targetTouches[0].clientY) - startDrag.y;
     }
 
     onTouchEnd(event) {
-        if (isDragging) {
-            isDragging = false;
-            dragCompleted = true;
-            return;
-        }
-
         if (event.touches.length == 0) { //I've let go of all points
+            if (isDragging) {
+                isDragging = false;
+                dragCompleted = true;
+                this.camera.x -= dragDelta.x;
+                this.camera.y -= dragDelta.y;
+                dragDelta.x = 0;
+                dragDelta.y = 0;
+                return;
+            }
+
             if (!isDragging && !dragCompleted) {
                 this.player.target.x = this.camera.x + parseInt(event.changedTouches[0].clientX);
                 this.player.target.y = this.camera.y + parseInt(event.changedTouches[0].clientY);
