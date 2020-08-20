@@ -8,6 +8,7 @@ class OverworldScene {
     }
 
     init() {
+        loadGame();
         this.camera = { x: 0, y: 0, center: { x: 0, y: 0 }, movementSpeed: 3 };
 
         this.area = {
@@ -15,15 +16,15 @@ class OverworldScene {
             height: 2560,
         };
         this.player = {
-            x: 1280,
-            y: 1280,
+            x: saveData.player.x,
+            y: saveData.player.y,
             width: 20,
             height: 20,
             center: { x: 10, y: 10 },
             angle: 90 * Math.PI / 180,
             rotationSpeed: 3 * Math.PI / 180,
             movementSpeed: 3,
-            target: { x: 1280, y: 1280 },
+            target: { x: saveData.player.x, y: saveData.player.y },
         };
 
         // this.quest = {
@@ -49,10 +50,16 @@ class OverworldScene {
         this.updatePlayer(delta);
 
         if (this.quest.withinBounds(this.player)) {
+            saveData.player.x = this.quest.x;
+            saveData.player.y = this.quest.y + this.quest.bounds.height;
+            saveGame();
             changeState(2);
         }
 
         if (keys[KeyCode.Esc]) {
+            saveData.player.x = 1280;
+            saveData.player.y = 1280;
+            saveGame();
             changeState(0);
         }
     }

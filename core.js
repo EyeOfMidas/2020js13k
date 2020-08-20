@@ -17,6 +17,11 @@ states.push(new OverworldScene());
 states.push(new PuzzleScene());
 var activeState = states[0];
 
+var saveData = {
+    player: { x: 1280, y: 1280 },
+    solves: 0,
+};
+
 function animate() {
     context.save();
     context.translate(0.5, 0.5);
@@ -59,6 +64,19 @@ function draw(context) {
 
 function functionExists(obj, method) {
     return typeof obj[method] == "function";
+}
+
+function saveGame() {
+    localStorage.setItem("eyeofmidas404", JSON.stringify(saveData));
+}
+
+function loadGame() {
+    let saveString = localStorage.getItem("eyeofmidas404");
+    if (!saveString) {
+        saveGame();
+        saveString = JSON.stringify(saveData);
+    }
+    saveData = JSON.parse(saveString);
 }
 
 function onResize() {
