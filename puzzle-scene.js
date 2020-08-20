@@ -10,6 +10,7 @@ class PuzzleScene {
         this.tiles = [];
         this.pathTiles = [];
         this.isWon = false;
+        this.splashText = new SplashText();
     }
 
     init() {
@@ -23,6 +24,8 @@ class PuzzleScene {
         }
 
         this.buildPath();
+
+        this.splashText = new SplashText("Connected!", - canvas.width - 200, canvas.height / 2);
     }
 
     buildPath() {
@@ -137,6 +140,7 @@ class PuzzleScene {
     }
 
     update(delta) {
+        Tween.update();
         for (let tileIndex in this.tiles) {
             this.tiles[tileIndex].update(delta);
         }
@@ -144,23 +148,36 @@ class PuzzleScene {
             changeState(1);
         }
         if (this.isWon) {
+            this.splashText.update(delta);
             return;
         }
         if (this.pathTiles.filter(tile => !tile.isOrientedCorrectly()).length == 0) {
             this.isWon = true;
-            setTimeout(() => {
-                changeState(1);
-            }, 500);
+            Tween.create(this.splashText, { x: canvas.width / 2 }, 3000, Tween.Easing.Elastic.EaseOut, () => {
+                setTimeout(() => {
+                    changeState(1);
+                }, 2000);
+            });
+
         }
     }
     draw(context) {
         for (let tileIndex in this.tiles) {
             this.tiles[tileIndex].draw(context);
         }
+        if (this.isWon) {
+            this.splashText.draw(context);
+        }
     }
 
     onResize() {
         this.board.offset = { x: (canvas.width / 2) - (this.board.width * 50) / 2, y: (canvas.height / 2) - (this.board.height * 50) / 2 };
+    }
+
+    onKeyUp(event) {
+        if (keys[KeyCode.W]) {
+            this.pathTiles.forEach(tile => { tile.targetRadians = tile.goal[0] * (Math.PI / 180); tile.targetRadians %= 360 * (Math.PI / 180) });
+        }
     }
 
     onMouseUp(event) {

@@ -17,13 +17,6 @@ states.push(new OverworldScene());
 states.push(new PuzzleScene());
 var activeState = states[0];
 
-var Color = {};
-Color.DarkBlue = "#3b72b9";
-Color.LightBlue = "#7EA8DF";
-Color.DarkGray = "#748499";
-Color.LightGray = "#A2A4A7";
-Color.White = "#FFFFFF";
-
 function animate() {
     context.save();
     context.translate(0.5, 0.5);
@@ -85,8 +78,8 @@ function onKeyDown(event) {
 }
 
 function onKeyUp(event) {
-    keys[event.keyCode] = false;
     functionExists(activeState, "onKeyUp") ? activeState.onKeyUp(event) : null;
+    keys[event.keyCode] = false;
 }
 
 function onMouseMove(event) {
