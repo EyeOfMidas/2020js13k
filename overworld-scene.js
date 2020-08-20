@@ -40,11 +40,11 @@ class OverworldScene {
 
         dragCompleted = false;
         isDragging = false;
+        this.updateCamera(0);
     }
 
     update(delta) {
         gameTicks++;
-        this.updateCamera(delta);
         this.updateBackground(delta);
         this.quest.update(delta);
         this.updatePlayer(delta);
@@ -76,9 +76,6 @@ class OverworldScene {
     }
 
     updateCamera(delta) {
-        if (dragCompleted) {
-            return;
-        }
         let playerRatioX = (this.player.x - this.camera.x) / canvas.width;
         if (playerRatioX < 0.3) {
             this.camera.x = this.player.x - (0.3 * canvas.width);
@@ -114,32 +111,39 @@ class OverworldScene {
     }
 
     updatePlayer(delta) {
+        let playerInputReceived = false;
         if (keys[KeyCode.W] || keys[KeyCode.Up]) {
             this.player.y += -this.player.movementSpeed * delta;
             this.player.target.y = this.player.y;
+            playerInputReceived = true;
         }
 
         if (keys[KeyCode.S] || keys[KeyCode.Down]) {
             this.player.y += this.player.movementSpeed * delta;
             this.player.target.y = this.player.y;
+            playerInputReceived = true;
         }
 
         if (keys[KeyCode.A] || keys[KeyCode.Left]) {
             this.player.x += -this.player.movementSpeed * delta;
             this.player.target.x = this.player.x;
+            playerInputReceived = true;
         }
 
         if (keys[KeyCode.D] || keys[KeyCode.Right]) {
             this.player.x += this.player.movementSpeed * delta;
             this.player.target.x = this.player.x;
+            playerInputReceived = true;
         }
 
         if (keys[KeyCode.Q]) {
             this.player.angle -= this.player.rotationSpeed * delta;
+            playerInputReceived = true;
         }
 
         if (keys[KeyCode.E]) {
             this.player.angle += this.player.rotationSpeed * delta;
+            playerInputReceived = true;
         }
 
         if (Math.abs(this.player.x - this.player.target.x) <= this.player.movementSpeed) {
@@ -154,6 +158,8 @@ class OverworldScene {
             let angle = (Math.atan2(this.player.target.y - this.player.y, this.player.target.x - this.player.x));
             this.player.x += this.player.movementSpeed * Math.cos(angle);
             this.player.y += this.player.movementSpeed * Math.sin(angle);
+
+            playerInputReceived = true;
         }
 
         if (this.player.x > this.area.width - this.player.width / 2) {
@@ -171,6 +177,9 @@ class OverworldScene {
         if (this.player.y < 0 + this.player.height / 2) {
             this.player.y = this.player.height / 2;
             this.player.target.y = this.player.y;
+        }
+        if (playerInputReceived) {
+            this.updateCamera(delta);
         }
     }
     drawPlayer(context) {

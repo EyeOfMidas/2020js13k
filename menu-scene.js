@@ -5,7 +5,16 @@ class MenuScene {
     }
 
     init() {
-        this.playButton = new Button(canvas.width / 2, canvas.height / 2, "Play", () => { alert('play'); });
+        this.playButton = new Button(canvas.width / 2, canvas.height / 2, "Play", () => { changeState(1); });
+        this.deleteSave = new Button(canvas.width / 2, canvas.height - 100, "Delete Save", () => { if (confirm('Are you sure you want to delete your game save?')) { deleteGame(); alert("Save deleted.") } });
+        this.deleteSave.width = 100;
+        this.deleteSave.height = 40;
+        this.deleteSave.fontSize = 18;
+        this.deleteSave.fontFamily = "Trebuchet MS";
+        this.deleteSave.buttonColor = "darkred";
+        this.deleteSave.buttonHoverColor = "crimson";
+        this.deleteSave.textColor = "crimson";
+        this.deleteSave.textHoverColor = "white";
     }
 
     update(delta) {
@@ -13,6 +22,7 @@ class MenuScene {
             changeState(1);
         }
         this.playButton.update(delta);
+        this.deleteSave.update(delta);
     }
     draw(context) {
         context.fillStyle = Color.LightBlue;
@@ -22,11 +32,14 @@ class MenuScene {
         context.font = "18px Trebuchet MS";
         context.fillText("Theme (not) Found", canvas.width / 2, (canvas.height / 4) + 20);
         this.playButton.draw(context);
+        this.deleteSave.draw(context);
     }
 
     onResize() {
         this.playButton.x = canvas.width / 2;
         this.playButton.y = canvas.height / 2;
+        this.deleteSave.x = canvas.width / 2;
+        this.deleteSave.y = canvas.height - 100;
     }
 
     onMouseMove(event) {
@@ -35,13 +48,22 @@ class MenuScene {
         if (this.playButton.isMouseOver(event)) {
             this.playButton.isHovered = true;
             document.body.style.cursor = "pointer";
+        }
+        this.deleteSave.isHovered = false;
+        if (this.deleteSave.isMouseOver(event)) {
+            this.deleteSave.isHovered = true;
+            document.body.style.cursor = "pointer";
 
         }
     }
 
     onMouseUp(event) {
         if (this.playButton.isMouseOver(event)) {
-            changeState(1);
+            this.playButton.triggerHandler();
+            document.body.style.cursor = "default";
+        }
+        if (this.deleteSave.isMouseOver(event)) {
+            this.deleteSave.triggerHandler();
             document.body.style.cursor = "default";
         }
     }
@@ -63,27 +85,33 @@ class Button {
         this.text = text;
         this.handler = handler;
         this.isHovered = false;
+        this.buttonColor = Color.DarkBlue;
+        this.buttonHoverColor = Color.LightGray;
+        this.textColor = Color.LightBlue;
+        this.textHoverColor = Color.White;
+        this.fontSize = 48;
+        this.fontFamily = "Trebuchet MS";
     }
     update(delta) {
     }
 
     draw(context) {
-        context.fillStyle = Color.DarkBlue;
+        context.fillStyle = this.buttonColor;
         if (this.isHovered) {
-            context.fillStyle = Color.LightGray;
+            context.fillStyle = this.buttonHoverColor;
         }
         context.save();
         context.translate(this.x, this.y);
         context.beginPath();
         context.rect(-this.width / 2, -this.height / 2, this.width, this.height);
         context.fill();
-        context.fillStyle = Color.LightBlue;
+        context.fillStyle = this.textColor;
         if (this.isHovered) {
-            context.fillStyle = Color.White;
+            context.fillStyle = this.textHoverColor;
         }
         context.textAlign = "center";
-        context.font = "48px Trebuchet MS";
-        context.fillText(this.text, 0, 10);
+        context.font = `${this.fontSize}px ${this.fontFamily}`;
+        context.fillText(this.text, 0, this.fontSize / 3);
         context.restore();
 
     }
@@ -96,5 +124,9 @@ class Button {
     isTouchOver(event) {
         return event.changedTouches[0].clientX > this.x - (this.width / 2) && event.changedTouches[0].clientX < this.x + this.width - (this.width / 2) &&
             event.changedTouches[0].clientY > this.y - (this.height / 2) && event.changedTouches[0].clientY < this.y + this.height - (this.height / 2);
+    }
+
+    triggerHandler() {
+        this.handler();
     }
 }

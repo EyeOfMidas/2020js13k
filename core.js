@@ -79,6 +79,10 @@ function loadGame() {
     saveData = JSON.parse(saveString);
 }
 
+function deleteGame() {
+    localStorage.removeItem("eyeofmidas404");
+}
+
 function onResize() {
     let dpi = window.devicePixelRatio;
     canvas.width = canvas.clientWidth;
