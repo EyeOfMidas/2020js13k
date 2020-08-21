@@ -65,7 +65,6 @@ class PuzzleScene {
         for (let i = 1; i < this.pathTiles.length - 1; i++) {
             let previousTile = this.pathTiles[i - 1];
             let currentTile = this.pathTiles[i];
-            currentTile.isPowered = true;
             let nextTile = this.pathTiles[i + 1];
             currentTile.piece = TileType.Straight;
             if (previousTile.x == nextTile.x && previousTile.y != nextTile.y) {
@@ -95,10 +94,6 @@ class PuzzleScene {
                     currentTile.goal = [270];
                 }
             }
-            currentTile.targetRadians = (90 + currentTile.goal[0]) * (Math.PI / 180);
-            currentTile.targetRadians %= 360 * (Math.PI / 180);
-
-
         }
 
         let pentultimateTile = this.pathTiles[this.pathTiles.length - 2];
@@ -152,7 +147,9 @@ class PuzzleScene {
             this.splashText.update(delta);
             return;
         }
-        if (this.pathTiles.filter(tile => !tile.isOrientedCorrectly()).length == 0) {
+        this.clearPower();
+        this.calculatePower(this.pathTiles[0]);
+        if (this.pathTiles[this.pathTiles.length - 1].isPowered) {
             this.isWon = true;
             this.splashTextTweenId = Tween.create(this.splashText, { x: canvas.width / 2 }, 3000, Tween.Easing.Elastic.EaseOut, () => {
                 setTimeout(() => {
@@ -168,6 +165,25 @@ class PuzzleScene {
         }
         if (this.isWon) {
             this.splashText.draw(context);
+        }
+    }
+
+    clearPower() {
+        for (let i = 0; i < this.tiles.length; i++) {
+            this.tiles[i].isPowered = false;
+        }
+    }
+
+    calculatePower(startingTile, source) {
+        if (startingTile.canReceivePower(source)) {
+            startingTile.isPowered = true;
+        }
+        let possibleCoords = startingTile.getPoweringTileCoordinates();
+        for (let i = 0; i < possibleCoords.length; i++) {
+            let foundTile = this.tiles.find(tile => tile.x == possibleCoords[i][0] + startingTile.x && tile.y == possibleCoords[i][1] + startingTile.y && !tile.isPowered);
+            if (foundTile) {
+                this.calculatePower(foundTile, startingTile);
+            }
         }
     }
 
@@ -246,16 +262,16 @@ class Tile {
             this.radians += (9 * (Math.PI / 180));
             this.radians %= (360 * (Math.PI / 180));
         }
-        for (let i = 0; i < this.powerPellets.length; i++) {
-            let pellet = this.powerPellets[i];
-            pellet.lifetime -= delta * 10;
-        }
+        //for (let i = 0; i < this.powerPellets.length; i++) {
+        //    let pellet = this.powerPellets[i];
+        //    pellet.lifetime -= delta * 10;
+        //}
 
-        if (this.powerPellets.length == 0) {
-            this.powerPellets.push({ lifetime: 500 });
-        }
+        //if (this.powerPellets.length == 0) {
+        //    this.powerPellets.push({ lifetime: 500 });
+        //}
 
-        this.powerPellets = this.powerPellets.filter(pellet => pellet.lifetime > 0);
+        //this.powerPellets = this.powerPellets.filter(pellet => pellet.lifetime > 0);
     }
 
     draw(context) {
@@ -276,7 +292,7 @@ class Tile {
         context.strokeStyle = Color.DarkBlue;
         context.lineWidth = 4;
 
-        if (this.isOrientedCorrectly()) {
+        if (this.isPowered) {
             context.fillStyle = Color.LightBlue;
             context.strokeStyle = Color.LightBlue;
         }
@@ -324,17 +340,17 @@ class Tile {
                 break;
         }
 
-        if (this.isPowered && this.isOrientedCorrectly()) {
-            context.fillStyle = Color.White;
-            for (let i = 0; i < this.powerPellets.length; i++) {
-                let pellet = this.powerPellets[i];
-                if (this.piece == TileType.Straight) {
-                    context.beginPath();
-                    context.arc(0, ((1 - pellet.lifetime / 500) * -(2 * this.center.y) + this.center.y), 2, 0, 2 * Math.PI);
-                    context.fill();
-                }
-            }
-        }
+        //if (this.isPowered) {
+        //    context.fillStyle = Color.White;
+        //    for (let i = 0; i < this.powerPellets.length; i++) {
+        //        let pellet = this.powerPellets[i];
+        //        if (this.piece == TileType.Straight) {
+        //            context.beginPath();
+        //            context.arc(0, ((1 - pellet.lifetime / 500) * -(2 * this.center.y) + this.center.y), 2, 0, 2 * Math.PI);
+        //            context.fill();
+        //        }
+        //    }
+        //}
         context.restore();
     }
 
@@ -348,7 +364,102 @@ class Tile {
         return this.x == x && this.y == y;
     }
 
-    isOrientedCorrectly() {
-        return this.goal.map(value => value * (Math.PI / 180)).includes(this.radians);
+    getPoweringTileCoordinates() {
+        let possibleCoordinates = [];
+        //using piece type and rotation, calculate the offsets
+        switch (this.piece) {
+            case TileType.Straight:
+                switch (this.radians * (180 / Math.PI)) {
+                    case 0:
+                    case 180:
+                        possibleCoordinates.push([0, -1]);
+                        possibleCoordinates.push([0, 1]);
+                        break;
+                    case 90:
+                    case 270:
+                        possibleCoordinates.push([-1, 0]);
+                        possibleCoordinates.push([1, 0]);
+                        break;
+                }
+                break;
+            case TileType.Corner:
+                switch (this.radians * (180 / Math.PI)) {
+                    case 0:
+                        possibleCoordinates.push([-1, 0]);
+                        possibleCoordinates.push([0, -1]);
+                        break;
+                    case 90:
+                        possibleCoordinates.push([0, -1]);
+                        possibleCoordinates.push([1, 0]);
+                        break;
+                    case 180:
+                        possibleCoordinates.push([1, 0]);
+                        possibleCoordinates.push([0, 1]);
+                        break;
+                    case 270:
+                        possibleCoordinates.push([-1, 0]);
+                        possibleCoordinates.push([0, 1]);
+                        break;
+                }
+                break;
+            case TileType.Tee:
+                switch (this.radians * (180 / Math.PI)) {
+                    case 0:
+                        possibleCoordinates.push([0, 1]);
+                        possibleCoordinates.push([-1, 0]);
+                        possibleCoordinates.push([0, -1]);
+                        break;
+                    case 90:
+                        possibleCoordinates.push([-1, 0]);
+                        possibleCoordinates.push([0, -1]);
+                        possibleCoordinates.push([1, 0]);
+                        break;
+                    case 180:
+                        possibleCoordinates.push([0, -1]);
+                        possibleCoordinates.push([1, 0]);
+                        possibleCoordinates.push([0, 1]);
+                        break;
+                    case 270:
+                        possibleCoordinates.push([1, 0]);
+                        possibleCoordinates.push([0, 1]);
+                        possibleCoordinates.push([-1, 0]);
+                        break;
+                }
+                break;
+            case TileType.Cross:
+                possibleCoordinates.push([0, -1]);
+                possibleCoordinates.push([0, 1]);
+                possibleCoordinates.push([-1, 0]);
+                possibleCoordinates.push([1, 0]);
+                break;
+            case TileType.Node:
+                switch (this.radians * (180 / Math.PI)) {
+                    case 0:
+                        possibleCoordinates.push([0, -1]);
+                        break;
+                    case 90:
+                        possibleCoordinates.push([1, 0]);
+                        break;
+                    case 180:
+                        possibleCoordinates.push([0, 1]);
+                        break;
+                    case 270:
+                        possibleCoordinates.push([-1, 0]);
+                        break;
+                }
+                break;
+            case TileType.Blank:
+            default:
+                break;
+        }
+        //return array of coordinates (offsets)
+        return possibleCoordinates;
+    }
+
+    canReceivePower(source) {
+        if (!source) {
+            return true;
+        }
+        return true;
     }
 }
