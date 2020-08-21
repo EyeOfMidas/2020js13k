@@ -273,8 +273,8 @@ class Tile {
         this.width = board.tileSize.width;
         this.height = board.tileSize.height;
         this.center = { x: board.tileSize.width / 2, y: board.tileSize.height / 2 };
-        this.radians = 0;//(90 * Math.floor(4 * Math.random())) * (Math.PI / 180);
-        this.targetRadians = 0;//(90 * Math.floor(4 * Math.random())) * (Math.PI / 180);
+        this.radians = (90 * Math.floor(4 * Math.random())) * (Math.PI / 180);
+        this.targetRadians = (90 * Math.floor(4 * Math.random())) * (Math.PI / 180);
         this.goal = [];
         this.piece = Math.floor(5 * Math.random());
         this.board = board;
