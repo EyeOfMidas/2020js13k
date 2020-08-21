@@ -48,7 +48,12 @@ function init() {
 }
 
 function changeState(id) {
-    states[id].init();
+    try {
+        states[id].init();
+    } catch (e) {
+        console.error("Something went wrong while changing state:", e);
+        return;
+    }
     activeState = states[id];
     onResize();
 }

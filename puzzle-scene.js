@@ -2,9 +2,10 @@ class PuzzleScene {
 
     constructor() {
         this.board = {
-            width: 8,
+            width: 7,
             height: 8,
-            offset: { x: 100, y: 100 }
+            offset: { x: 100, y: 100 },
+            tileSize: { width: 50, height: 50 },
         };
 
         this.tiles = [];
@@ -17,7 +18,15 @@ class PuzzleScene {
     init() {
         this.isWon = false;
         this.tiles = [];
-        this.board.offset = { x: (canvas.width / 2) - (this.board.width * 50) / 2, y: (canvas.height / 2) - (this.board.height * 50) / 2 };
+        let maxWidth = Math.floor(canvas.width / (this.board.tileSize.width + 3)) - 3;
+        let maxHeight = Math.floor(canvas.height / (this.board.tileSize.height + 3)) - 3;
+        this.board = {
+            width: Math.floor(maxWidth * Math.random()) + 2,
+            height: Math.floor(maxHeight * Math.random()) + 2,
+            offset: { x: 100, y: 100 },
+            tileSize: { width: 50, height: 50 },
+        };
+        this.board.offset = { x: (canvas.width / 2) - (this.board.width * this.board.tileSize.width) / 2, y: (canvas.height / 2) - (this.board.height * this.board.tileSize.height) / 2 };
         for (let y = 0; y < this.board.height; y++) {
             for (let x = 0; x < this.board.width; x++) {
                 this.tiles.push(new Tile(this.board, x, y));
@@ -36,9 +45,10 @@ class PuzzleScene {
         this.pathTiles.push(currentTile);
         let invalidTiles = [];
 
-        while (currentTile.x < 7) {
+        while (currentTile.x < this.board.width - 1) {
             let validPathChoices = this.tiles.filter(tile => this.isValidNearby(tile, currentTile, invalidTiles));
             if (validPathChoices.length == 0) {
+                console.log("no valid paths available from here", currentTile, this.pathTiles);
                 this.pathTiles.splice(this.pathTiles.findIndex(tile => tile == currentTile), 1);
                 invalidTiles.push(currentTile);
                 currentTile = this.pathTiles[this.pathTiles.length - 1];
@@ -189,7 +199,7 @@ class PuzzleScene {
     }
 
     onResize() {
-        this.board.offset = { x: (canvas.width / 2) - (this.board.width * 50) / 2, y: (canvas.height / 2) - (this.board.height * 50) / 2 };
+        this.board.offset = { x: (canvas.width / 2) - (this.board.width * this.board.tileSize.width) / 2, y: (canvas.height / 2) - (this.board.height * this.board.tileSize.height) / 2 };
     }
 
     onKeyUp(event) {
@@ -245,9 +255,9 @@ class Tile {
     constructor(board, x, y) {
         this.x = x;
         this.y = y;
-        this.width = 50;
-        this.height = 50;
-        this.center = { x: 25, y: 25 };
+        this.width = board.tileSize.width;
+        this.height = board.tileSize.height;
+        this.center = { x: board.tileSize.width / 2, y: board.tileSize.height / 2 };
         this.radians = 0;//(90 * Math.floor(4 * Math.random())) * (Math.PI / 180);
         this.targetRadians = 0;//(90 * Math.floor(4 * Math.random())) * (Math.PI / 180);
         this.goal = [];
