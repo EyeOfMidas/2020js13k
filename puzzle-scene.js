@@ -40,15 +40,19 @@ class PuzzleScene {
 
     buildPath() {
         this.pathTiles = [];
-        let validStartTiles = this.tiles.filter(tile => tile.x == 0);
+        let validStartTiles = [];
+        if (this.board.width >= this.board.height) {
+            validStartTiles = this.tiles.filter(tile => tile.x == 0);
+        } else {
+            validStartTiles = this.tiles.filter(tile => tile.y == 0);
+        }
         let currentTile = validStartTiles[Math.floor(validStartTiles.length * Math.random())];
         this.pathTiles.push(currentTile);
         let invalidTiles = [];
 
-        while (currentTile.x < this.board.width - 1) {
+        while (this.isEndingConditionMet(currentTile)) {
             let validPathChoices = this.tiles.filter(tile => this.isValidNearby(tile, currentTile, invalidTiles));
             if (validPathChoices.length == 0) {
-                console.log("no valid paths available from here", currentTile, this.pathTiles);
                 this.pathTiles.splice(this.pathTiles.findIndex(tile => tile == currentTile), 1);
                 invalidTiles.push(currentTile);
                 currentTile = this.pathTiles[this.pathTiles.length - 1];
@@ -116,6 +120,13 @@ class PuzzleScene {
         } else if (lastTile.x == pentultimateTile.x && lastTile.y > pentultimateTile.y) {
             lastTile.goal = [0];
         }
+    }
+
+    isEndingConditionMet(currentTile) {
+        if (this.board.width >= this.board.height) {
+            return currentTile.x < this.board.width - 1;
+        }
+        return currentTile.y < this.board.height - 1;
     }
 
     isValidNearby(tile, currentTile, invalidTiles) {
