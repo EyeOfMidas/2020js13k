@@ -73,6 +73,8 @@ class PuzzleScene {
             startTile.goal = [180];
         } else if (startTile.x == nextTile.x && startTile.y > nextTile.y) {
             startTile.goal = [0];
+        } else if (startTile.x > nextTile.x && startTile.y == nextTile.y) {
+            startTile.goal = [270];
         }
         startTile.targetRadians = startTile.goal[0] * (Math.PI / 180);
 
