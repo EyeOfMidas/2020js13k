@@ -27,12 +27,10 @@ class OverworldScene {
             target: { x: saveData.player.x, y: saveData.player.y },
         };
 
-        // this.quest = {
-        //     x: 1400, y: 1200,
-        //     bounds: { width: 25, height: 25 },
-        // };
+        this.camera.x = saveData.camera.x;
+        this.camera.y = saveData.camera.y;
 
-        this.quest = new Quest(1400, 1200);
+        this.quest = new Quest(1024 + 256, 1024 + 128 - 20);
 
         for (let i = 0; i < 256; i++) {
             keys[i] = false;
@@ -68,6 +66,8 @@ class OverworldScene {
         context.translate(-this.camera.x + dragDelta.x, -this.camera.y + dragDelta.y);
 
         this.drawBackground(context);
+
+        this.drawRail(context);
 
         this.drawPlayer(context);
         this.quest.draw(context);
@@ -108,6 +108,50 @@ class OverworldScene {
                 context.stroke();
             }
         }
+    }
+
+    drawRail(context) {
+        context.strokeStyle = Color.LightBlue;
+        context.lineWidth = 4;
+        context.beginPath();
+        context.arc(896, 1024, 10, 0, 2 * Math.PI);
+        context.stroke();
+        context.beginPath();
+        context.moveTo(896 + 10 * Math.cos(0), 1024 + 10 * Math.sin(0));
+        context.lineTo(1024, 1024, 10, 0, 2 * Math.PI);
+        context.stroke();
+        context.beginPath();
+        context.moveTo(1024, 1024);
+        //context.lineTo(1024 + 128 - 10 * Math.cos(45 * (Math.PI / 1280)), 1024 + 128 - 10 * Math.sin(45 * (Math.PI / 180)), 10, 0, 2 * Math.PI);
+        context.lineTo(1024 + 128, 1024 + 128);
+        context.stroke();
+        context.beginPath();
+        context.moveTo(1024 + 128, 1024 + 128);
+        context.lineTo(1024 + 256 - 10 * Math.cos(0), 1024 + 128, 10, 0, 2 * Math.PI);
+        context.stroke();
+        context.beginPath();
+        context.arc(1024 + 256, 1024 + 128, 10, 0, 2 * Math.PI);
+        context.stroke();
+
+        //second rail
+        context.beginPath();
+        context.arc(1024 + 256, 1024 + 128, 10, 0, 2 * Math.PI);
+        context.stroke();
+        context.beginPath();
+        context.moveTo(1024 + 256 + 10 * Math.cos(0), 1024 + 128 + 10 * Math.sin(0));
+        context.lineTo(1024 + 256 + 128, 1024 + 128, 10, 0, 2 * Math.PI);
+        context.stroke();
+        context.beginPath();
+        context.moveTo(1024 + 256 + 128, 1024 + 128);
+        context.lineTo(1024 + 512, 1024 + 256);
+        context.stroke();
+        context.beginPath();
+        context.moveTo(1024 + 512, 1024 + 256);
+        context.lineTo(1024 + 512 + 128 - 10 * Math.cos(0), 1024 + 256, 10, 0, 2 * Math.PI);
+        context.stroke();
+        context.beginPath();
+        context.arc(1024 + 512 + 128, 1024 + 256, 10, 0, 2 * Math.PI);
+        context.stroke();
     }
 
     updatePlayer(delta) {
