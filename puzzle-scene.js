@@ -175,9 +175,10 @@ class PuzzleScene {
     }
 
     calculatePower(startingTile, source) {
-        if (startingTile.canReceivePower(source)) {
-            startingTile.isPowered = true;
+        if (!startingTile.canReceivePower(source)) {
+            return;
         }
+        startingTile.isPowered = true;
         let possibleCoords = startingTile.getPoweringTileCoordinates();
         for (let i = 0; i < possibleCoords.length; i++) {
             let foundTile = this.tiles.find(tile => tile.x == possibleCoords[i][0] + startingTile.x && tile.y == possibleCoords[i][1] + startingTile.y && !tile.isPowered);
@@ -366,7 +367,6 @@ class Tile {
 
     getPoweringTileCoordinates() {
         let possibleCoordinates = [];
-        //using piece type and rotation, calculate the offsets
         switch (this.piece) {
             case TileType.Straight:
                 switch (this.radians * (180 / Math.PI)) {
@@ -452,7 +452,6 @@ class Tile {
             default:
                 break;
         }
-        //return array of coordinates (offsets)
         return possibleCoordinates;
     }
 
@@ -460,6 +459,13 @@ class Tile {
         if (!source) {
             return true;
         }
-        return true;
+        let possibleHookups = this.getPoweringTileCoordinates();
+
+        for (let i = 0; i < possibleHookups.length; i++) {
+            if (source.x == (possibleHookups[i][0]) + this.x && source.y == (possibleHookups[i][1]) + this.y) {
+                return true;
+            }
+        }
+        return false;
     }
 }
