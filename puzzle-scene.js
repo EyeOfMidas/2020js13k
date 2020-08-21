@@ -121,6 +121,8 @@ class PuzzleScene {
             lastTile.goal = [180];
         } else if (lastTile.x == pentultimateTile.x && lastTile.y > pentultimateTile.y) {
             lastTile.goal = [0];
+        } else if (lastTile.x < pentultimateTile.x && lastTile.y == pentultimateTile.y) {
+            lastTile.goal = [90];
         }
     }
 
