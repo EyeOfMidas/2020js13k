@@ -11,7 +11,7 @@ class PuzzleScene {
         this.tiles = [];
         this.pathTiles = [];
         this.isWon = false;
-        this.splashText = new SplashText();
+        this.splashText = null;
         this.splashTextTweenId = -1;
     }
 
@@ -35,7 +35,7 @@ class PuzzleScene {
 
         this.buildPath();
 
-        this.splashText = new SplashText("Connected!", - canvas.width - 200, canvas.height / 2);
+        this.splashText = new SplashText("Connected!", - canvas.width - 200, canvas.height / 2, { width: canvas.width - 200, height: 100 });
     }
 
     buildPath() {
