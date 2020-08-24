@@ -50,6 +50,8 @@ class OverworldScene {
         if (this.quest.withinBounds(this.player)) {
             saveData.player.x = this.quest.x;
             saveData.player.y = this.quest.y + this.quest.bounds.height;
+            saveData.camera.x = this.camera.x;
+            saveData.camera.y = this.camera.y;
             saveGame();
             changeState(2);
         }
