@@ -31,6 +31,11 @@ class OverworldScene {
         this.camera.y = saveData.camera.y;
 
         this.quest = new Quest(1024 + 256, 1024 + 128 - 20);
+        this.rails = [];
+        this.rails.push(new Rail());
+        this.rails[0].buildRailOne();
+        this.rails.push(new Rail());
+        this.rails[1].buildRailTwo();
 
         for (let i = 0; i < 256; i++) {
             keys[i] = false;
@@ -115,45 +120,10 @@ class OverworldScene {
     drawRail(context) {
         context.strokeStyle = Color.LightBlue;
         context.lineWidth = 4;
-        context.beginPath();
-        context.arc(896, 1024, 10, 0, 2 * Math.PI);
-        context.stroke();
-        context.beginPath();
-        context.moveTo(896 + 10 * Math.cos(0), 1024 + 10 * Math.sin(0));
-        context.lineTo(1024, 1024, 10, 0, 2 * Math.PI);
-        context.stroke();
-        context.beginPath();
-        context.moveTo(1024, 1024);
-        //context.lineTo(1024 + 128 - 10 * Math.cos(45 * (Math.PI / 1280)), 1024 + 128 - 10 * Math.sin(45 * (Math.PI / 180)), 10, 0, 2 * Math.PI);
-        context.lineTo(1024 + 128, 1024 + 128);
-        context.stroke();
-        context.beginPath();
-        context.moveTo(1024 + 128, 1024 + 128);
-        context.lineTo(1024 + 256 - 10 * Math.cos(0), 1024 + 128, 10, 0, 2 * Math.PI);
-        context.stroke();
-        context.beginPath();
-        context.arc(1024 + 256, 1024 + 128, 10, 0, 2 * Math.PI);
-        context.stroke();
-
-        //second rail
-        context.beginPath();
-        context.arc(1024 + 256, 1024 + 128, 10, 0, 2 * Math.PI);
-        context.stroke();
-        context.beginPath();
-        context.moveTo(1024 + 256 + 10 * Math.cos(0), 1024 + 128 + 10 * Math.sin(0));
-        context.lineTo(1024 + 256 + 128, 1024 + 128, 10, 0, 2 * Math.PI);
-        context.stroke();
-        context.beginPath();
-        context.moveTo(1024 + 256 + 128, 1024 + 128);
-        context.lineTo(1024 + 512, 1024 + 256);
-        context.stroke();
-        context.beginPath();
-        context.moveTo(1024 + 512, 1024 + 256);
-        context.lineTo(1024 + 512 + 128 - 10 * Math.cos(0), 1024 + 256, 10, 0, 2 * Math.PI);
-        context.stroke();
-        context.beginPath();
-        context.arc(1024 + 512 + 128, 1024 + 256, 10, 0, 2 * Math.PI);
-        context.stroke();
+        for (let i = 0; i < this.rails.length; i++) {
+            let rail = this.rails[i];
+            rail.draw(context);
+        }
     }
 
     updatePlayer(delta) {
@@ -354,5 +324,56 @@ class Quest {
     withinBounds(player) {
         return player.x > this.x - (this.bounds.width / 2) && player.y > this.y - (this.bounds.height / 2) &&
             player.x < (this.x - (this.bounds.width / 2)) + this.bounds.width && player.y < (this.y - (this.bounds.height / 2)) + this.bounds.height;
+    }
+}
+
+class Rail {
+    constructor() {
+        this.vertexes = [];
+    }
+
+    buildRailOne() {
+        this.vertexes.push(this.createNode(896, 1024));
+        this.vertexes.push(this.createVertex(1024, 1024));
+        this.vertexes.push(this.createVertex(1152, 1152));
+        this.vertexes.push(this.createNode(1280, 1152));
+    }
+
+    buildRailTwo() {
+        this.vertexes.push(this.createNode(1280, 1152 + 30));
+        this.vertexes.push(this.createVertex(1408, 1152 + 30));
+        this.vertexes.push(this.createVertex(1536, 1280));
+        this.vertexes.push(this.createNode(1664, 1280));
+    }
+
+    createNode(x, y) {
+        return { x: x, y: y, node: 10 };
+    }
+
+    createVertex(x, y) {
+        return { x: x, y: y };
+    }
+
+    draw(context) {
+        for (let i = 0; i < this.vertexes.length - 1; i++) {
+            let vertex = this.vertexes[i];
+            let nextVertex = this.vertexes[i + 1];
+            if (vertex.node) {
+                context.beginPath();
+                context.arc(vertex.x, vertex.y, vertex.node, 0, 2 * Math.PI);
+                context.stroke();
+            }
+            context.beginPath();
+            context.moveTo(vertex.x, vertex.y);
+            context.lineTo(nextVertex.x, nextVertex.y);
+            context.stroke();
+        }
+
+        let lastVertex = this.vertexes[this.vertexes.length - 1];
+        if (lastVertex.node) {
+            context.beginPath();
+            context.arc(lastVertex.x, lastVertex.y, lastVertex.node, 0, 2 * Math.PI);
+            context.stroke();
+        }
     }
 }
