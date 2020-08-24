@@ -26,9 +26,11 @@ class PuzzleScene {
             offset: { x: 100, y: 100 },
             tileSize: { width: 50, height: 50 },
         };
+        // this.board.width = maxWidth + 1;
+        // this.board.height = maxHeight + 1;
         this.board.offset = { x: (canvas.width / 2) - (this.board.width * this.board.tileSize.width) / 2, y: (canvas.height / 2) - (this.board.height * this.board.tileSize.height) / 2 };
         for (let y = 0; y < this.board.height; y++) {
-            for (let x = 0; x < this.board.width; x++) {
+            for (let x = 0; x <= this.board.width; x++) {
                 this.tiles.push(new Tile(this.board, x, y));
             }
         }
