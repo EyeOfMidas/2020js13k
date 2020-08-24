@@ -15,6 +15,6 @@ if ! command -v terser &> /dev/null; then
 	fi
 fi
 #npm -g install terser webpack terser-webpack-plugin
-terser --compress --output min.js pack.js
+terser --compress --mangle toplevel --output min.js -- pack.js
 zip game.zip min.js index.html
 ls -lah game.zip
