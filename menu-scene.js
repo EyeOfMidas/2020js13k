@@ -11,10 +11,10 @@ class MenuScene {
         this.deleteSave.height = 40;
         this.deleteSave.fontSize = 18;
         this.deleteSave.fontFamily = "Trebuchet MS";
-        this.deleteSave.buttonColor = "darkred";
+        this.deleteSave.buttonColor = Color.LightGray;
         this.deleteSave.buttonHoverColor = "crimson";
-        this.deleteSave.textColor = "crimson";
-        this.deleteSave.textHoverColor = "white";
+        this.deleteSave.textColor = Color.DarkGray;
+        this.deleteSave.textHoverColor = Color.White;
     }
 
     update(delta) {
@@ -53,7 +53,6 @@ class MenuScene {
         if (this.deleteSave.isMouseOver(event)) {
             this.deleteSave.isHovered = true;
             document.body.style.cursor = "pointer";
-
         }
     }
 
