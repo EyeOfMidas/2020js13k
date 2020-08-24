@@ -15,27 +15,32 @@ class OverworldScene {
             width: 2560,
             height: 2560,
         };
+        this.rails = [];
+        this.rails.push(new Rail());
+        this.rails[0].buildRailOne();
+        this.rails.push(new Rail());
+        this.rails[1].buildRailTwo();
+
+        let currentNode = this.rails[saveData.player.rail].vertexes[saveData.player.railnode];
         this.player = {
-            x: saveData.player.x,
-            y: saveData.player.y,
+            x: currentNode.x,
+            y: currentNode.y,
             width: 20,
             height: 20,
             center: { x: 10, y: 10 },
             angle: 90 * Math.PI / 180,
             rotationSpeed: 3 * Math.PI / 180,
             movementSpeed: 3,
-            target: { x: saveData.player.x, y: saveData.player.y },
+            target: { x: currentNode.x, y: currentNode.y },
+            rail: saveData.player.rail,
+            railnode: saveData.player.railnode,
         };
 
         this.camera.x = saveData.camera.x;
         this.camera.y = saveData.camera.y;
 
         this.quest = new Quest(1024 + 256, 1024 + 128 - 20);
-        this.rails = [];
-        this.rails.push(new Rail());
-        this.rails[0].buildRailOne();
-        this.rails.push(new Rail());
-        this.rails[1].buildRailTwo();
+
 
         for (let i = 0; i < 256; i++) {
             keys[i] = false;
@@ -53,18 +58,14 @@ class OverworldScene {
         this.updatePlayer(delta);
 
         if (this.quest.withinBounds(this.player)) {
-            saveData.player.x = this.quest.x;
-            saveData.player.y = this.quest.y + this.quest.bounds.height;
-            saveData.camera.x = this.camera.x;
-            saveData.camera.y = this.camera.y;
-            saveGame();
+            this.saveScene();
             changeState(2);
         }
 
         if (keys[KeyCode.Esc]) {
-            saveData.player.x = 1280;
-            saveData.player.y = 1280;
-            saveGame();
+            this.player.rail = 0;
+            this.player.railnode = 0;
+            this.saveScene();
             changeState(0);
         }
     }
@@ -80,6 +81,14 @@ class OverworldScene {
         this.quest.draw(context);
 
         context.restore();
+    }
+
+    saveScene() {
+        saveData.player.rail = this.player.rail;
+        saveData.player.railnode = this.player.railnode;
+        saveData.camera.x = this.camera.x;
+        saveData.camera.y = this.camera.y;
+        saveGame();
     }
 
     updateCamera(delta) {
@@ -106,13 +115,13 @@ class OverworldScene {
     }
 
     drawBackground(context) {
-        context.strokeStyle = Color.DarkGray;
+        context.fillStyle = "#404040";
         context.lineWidth = 3;
         for (let y = 0; y < Math.floor(this.area.height / 128); y++) {
             for (let x = 0; x < Math.floor(this.area.width / 128); x++) {
                 context.beginPath();
                 context.rect(x * 128, y * 128, 128, 128);
-                context.stroke();
+                context.fill();
             }
         }
     }
@@ -128,37 +137,36 @@ class OverworldScene {
 
     updatePlayer(delta) {
         let playerInputReceived = false;
+        let nextNode = this.rails[this.player.rail].vertexes[this.player.railnode + 1];
+        let previousNode = this.rails[this.player.rail].vertexes[this.player.railnode - 1];
+
         if (keys[KeyCode.W] || keys[KeyCode.Up]) {
-            this.player.y += -this.player.movementSpeed * delta;
-            this.player.target.y = this.player.y;
+            // this.player.y += -this.player.movementSpeed * delta;
+            // this.player.target.y = this.player.y;
+            this.player.y -= 2 * this.player.movementSpeed;
             playerInputReceived = true;
         }
 
         if (keys[KeyCode.S] || keys[KeyCode.Down]) {
-            this.player.y += this.player.movementSpeed * delta;
-            this.player.target.y = this.player.y;
+            // this.player.y += this.player.movementSpeed * delta;
+            // this.player.target.y = this.player.y;
+            this.player.y += 2 * this.player.movementSpeed;
             playerInputReceived = true;
         }
 
-        if (keys[KeyCode.A] || keys[KeyCode.Left]) {
-            this.player.x += -this.player.movementSpeed * delta;
-            this.player.target.x = this.player.x;
+        if (keys[KeyCode.A] || keys[KeyCode.Left] && previousNode) {
+            // this.player.x += -this.player.movementSpeed * delta;
+            // this.player.target.x = this.player.x;
+            this.player.target.x = previousNode.x;
+            this.player.target.y = previousNode.y;
             playerInputReceived = true;
         }
 
-        if (keys[KeyCode.D] || keys[KeyCode.Right]) {
-            this.player.x += this.player.movementSpeed * delta;
-            this.player.target.x = this.player.x;
-            playerInputReceived = true;
-        }
-
-        if (keys[KeyCode.Q]) {
-            this.player.angle -= this.player.rotationSpeed * delta;
-            playerInputReceived = true;
-        }
-
-        if (keys[KeyCode.E]) {
-            this.player.angle += this.player.rotationSpeed * delta;
+        if (keys[KeyCode.D] || keys[KeyCode.Right] && nextNode) {
+            // this.player.x += this.player.movementSpeed * delta;
+            // this.player.target.x = this.player.x;
+            this.player.target.x = nextNode.x;
+            this.player.target.y = nextNode.y;
             playerInputReceived = true;
         }
 
@@ -170,6 +178,15 @@ class OverworldScene {
             this.player.y = this.player.target.y;
         }
 
+        if (previousNode && this.player.x == previousNode.x && this.player.y == previousNode.y) {
+            this.player.railnode--;
+            this.saveScene();
+        }
+        if (nextNode && this.player.x == nextNode.x && this.player.y == nextNode.y) {
+            this.player.railnode++;
+            this.saveScene();
+        }
+
         if (this.player.target.x != this.player.x || this.player.target.y != this.player.y) {
             let angle = (Math.atan2(this.player.target.y - this.player.y, this.player.target.x - this.player.x));
             this.player.x += this.player.movementSpeed * Math.cos(angle);
@@ -178,6 +195,7 @@ class OverworldScene {
             playerInputReceived = true;
         }
 
+        //area boundaries
         if (this.player.x > this.area.width - this.player.width / 2) {
             this.player.x = this.area.width - this.player.width / 2;
             this.player.target.x = this.player.x;

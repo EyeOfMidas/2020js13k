@@ -18,7 +18,7 @@ states.push(new PuzzleScene());
 var activeState = states[0];
 
 var saveData = {
-    player: { x: 896, y: 1024 },
+    player: { rail: 0, railnode: 0 },
     camera: { x: 1280, y: 1280 },
     solves: 0,
 };
