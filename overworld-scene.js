@@ -21,7 +21,7 @@ class OverworldScene {
         this.rails.push(new Rail());
         this.rails[1].buildRailTwo();
 
-        let currentNode = this.rails[saveData.player.rail].vertexes[saveData.player.railnode];
+        let currentNode = this.getRailNode(saveData.player.rail, saveData.player.railnode);
         this.player = {
             x: currentNode.x,
             y: currentNode.y,
@@ -49,6 +49,10 @@ class OverworldScene {
         dragCompleted = false;
         isDragging = false;
         this.updateCamera(0);
+    }
+
+    getRailNode(rail, node) {
+        return this.rails[rail].vertexes[node];
     }
 
     update(delta) {
@@ -137,8 +141,8 @@ class OverworldScene {
 
     updatePlayer(delta) {
         let playerInputReceived = false;
-        let nextNode = this.rails[this.player.rail].vertexes[this.player.railnode + 1];
-        let previousNode = this.rails[this.player.rail].vertexes[this.player.railnode - 1];
+        let previousNode = this.getRailNode(this.player.rail, this.player.railnode - 1);
+        let nextNode = this.getRailNode(this.player.rail, this.player.railnode + 1);
 
         if (keys[KeyCode.W] || keys[KeyCode.Up]) {
             // this.player.y += -this.player.movementSpeed * delta;
@@ -154,19 +158,17 @@ class OverworldScene {
             playerInputReceived = true;
         }
 
-        if (keys[KeyCode.A] || keys[KeyCode.Left] && previousNode) {
+        if (keys[KeyCode.A] || keys[KeyCode.Left]) {
             // this.player.x += -this.player.movementSpeed * delta;
             // this.player.target.x = this.player.x;
-            this.player.target.x = previousNode.x;
-            this.player.target.y = previousNode.y;
+            this.moveToPreviousNode();
             playerInputReceived = true;
         }
 
         if (keys[KeyCode.D] || keys[KeyCode.Right] && nextNode) {
             // this.player.x += this.player.movementSpeed * delta;
             // this.player.target.x = this.player.x;
-            this.player.target.x = nextNode.x;
-            this.player.target.y = nextNode.y;
+            this.moveToNextNode();
             playerInputReceived = true;
         }
 
@@ -181,10 +183,18 @@ class OverworldScene {
         if (previousNode && this.player.x == previousNode.x && this.player.y == previousNode.y) {
             this.player.railnode--;
             this.saveScene();
+            let currentNode = this.getRailNode(this.player.rail, this.player.railnode);
+            if (!currentNode.node) {
+                this.moveToPreviousNode();
+            }
         }
         if (nextNode && this.player.x == nextNode.x && this.player.y == nextNode.y) {
             this.player.railnode++;
             this.saveScene();
+            let currentNode = this.getRailNode(this.player.rail, this.player.railnode);
+            if (!currentNode.node) {
+                this.moveToNextNode();
+            }
         }
 
         if (this.player.target.x != this.player.x || this.player.target.y != this.player.y) {
@@ -216,6 +226,23 @@ class OverworldScene {
             this.updateCamera(delta);
         }
     }
+
+    moveToPreviousNode() {
+        let previousNode = this.getRailNode(this.player.rail, this.player.railnode - 1);
+        if (previousNode) {
+            this.player.target.x = previousNode.x;
+            this.player.target.y = previousNode.y;
+        }
+    }
+
+    moveToNextNode() {
+        let nextNode = this.getRailNode(this.player.rail, this.player.railnode + 1);
+        if (nextNode) {
+            this.player.target.x = nextNode.x;
+            this.player.target.y = nextNode.y;
+        }
+    }
+
     drawPlayer(context) {
         context.save();
         context.fillStyle = Color.LightBlue;
