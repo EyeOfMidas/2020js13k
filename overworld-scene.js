@@ -294,10 +294,18 @@ class OverworldScene {
         if (!(this.player.x == this.player.target.x && this.player.y == this.player.target.y)) {
             return;
         }
-        if (this.camera.x + parseInt(event.clientX) > this.player.x) {
-            this.moveToNextNode();
-        } else if (this.camera.x + parseInt(event.clientX) < this.player.x) {
-            this.moveToPreviousNode();
+        if (Math.abs((this.camera.x + event.clientX) - this.player.x) > Math.abs((this.camera.y + event.clientY) - this.player.y)) {
+            if (this.camera.x + event.clientX > this.player.x) {
+                this.moveToNextNode();
+            } else if (this.camera.x + event.clientX < this.player.x) {
+                this.moveToPreviousNode();
+            }
+        } else {
+            if (this.camera.y + event.clientY > this.player.y) {
+                this.jumpDownRail();
+            } else if (this.camera.y + event.clientY < this.player.y) {
+                this.jumpUpRail();
+            }
         }
     }
 
