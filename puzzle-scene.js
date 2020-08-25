@@ -178,6 +178,11 @@ class PuzzleScene {
         }
         if (this.isWon) {
             this.splashText.update(delta);
+
+            if (keys[KeyCode.Enter]) {
+                Tween.cancel(this.splashTextTweenId);
+                changeState(1);
+            }
             return;
         }
         this.clearPower();
@@ -187,10 +192,10 @@ class PuzzleScene {
             saveData.player.rail = puzzleRules.successRail;
             saveData.player.railnode = puzzleRules.successNode;
             saveGame();
-            this.splashTextTweenId = Tween.create(this.splashText, { x: canvas.width / 2 }, 3000, Tween.Easing.Elastic.EaseOut, () => {
+            this.splashTextTweenId = Tween.create(this.splashText, { x: canvas.width / 2 }, 2000, Tween.Easing.Elastic.EaseOut, () => {
                 setTimeout(() => {
                     changeState(1);
-                }, 1000);
+                }, 750);
             });
 
         }

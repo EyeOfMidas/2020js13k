@@ -170,6 +170,17 @@ class OverworldScene {
             playerInputReceived = true;
         }
 
+        if (keys[KeyCode.Enter]) {
+            let currentRail = this.getRailNode(this.player.rail, this.player.railnode);
+            if (null != currentRail.up) {
+                this.jumpUpRail();
+            } else {
+                if (null != currentRail.down) {
+                    this.jumpDownRail();
+                }
+            }
+        }
+
 
         if (this.player.x == this.player.target.x && this.player.y == this.player.target.y) {
 
@@ -257,7 +268,6 @@ class OverworldScene {
 
     jumpUpRail() {
         let currentRail = this.getRailNode(this.player.rail, this.player.railnode);
-        console.log(currentRail);
         if (null != currentRail.up) {
             let quest = this.quests[currentRail.up];
             puzzleRules = quest;
@@ -268,7 +278,6 @@ class OverworldScene {
 
     jumpDownRail() {
         let currentRail = this.getRailNode(this.player.rail, this.player.railnode);
-        console.log(currentRail);
         if (null != currentRail.down) {
             let quest = this.quests[currentRail.down];
             puzzleRules = quest;
