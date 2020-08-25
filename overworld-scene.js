@@ -16,11 +16,27 @@ class OverworldScene {
             width: 2560,
             height: 2560,
         };
+
+        var railData = [
+            [
+                { x: 896, y: 1024, node: 10, },
+                { x: 1024, y: 1024 },
+                { x: 1152, y: 1152 },
+                { x: 1280, y: 1152, node: 10, down: 0 },
+            ],
+            [
+                { x: 1280, y: 1152 + 30, node: 10, up: 1 },
+                { x: 1408, y: 1152 + 30 },
+                { x: 1536, y: 1280 },
+                { x: 1664, y: 1280, node: 10 },
+            ],
+        ];
         this.rails = [];
-        this.rails.push(new Rail());
-        this.rails[0].buildRailOne();
-        this.rails.push(new Rail());
-        this.rails[1].buildRailTwo();
+        for (let i = 0; i < railData.length; i++) {
+            let rail = new Rail();
+            rail.vertexes = railData[i];
+            this.rails.push(rail);
+        }
 
         let currentNode = this.getRailNode(saveData.player.rail, saveData.player.railnode);
         this.player = {
@@ -426,28 +442,6 @@ class Quest {
 class Rail {
     constructor() {
         this.vertexes = [];
-    }
-
-    buildRailOne() {
-        this.vertexes.push(this.createNode(896, 1024));
-        this.vertexes.push(this.createVertex(1024, 1024));
-        this.vertexes.push(this.createVertex(1152, 1152));
-        this.vertexes.push(this.createNode(1280, 1152, null, 0));
-    }
-
-    buildRailTwo() {
-        this.vertexes.push(this.createNode(1280, 1152 + 30, 1));
-        this.vertexes.push(this.createVertex(1408, 1152 + 30));
-        this.vertexes.push(this.createVertex(1536, 1280));
-        this.vertexes.push(this.createNode(1664, 1280));
-    }
-
-    createNode(x, y, up = null, down = null) {
-        return { x: x, y: y, node: 10, up: up, down: down };
-    }
-
-    createVertex(x, y) {
-        return { x: x, y: y };
     }
 
     draw(context) {
