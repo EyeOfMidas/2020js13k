@@ -57,6 +57,8 @@ class MenuScene {
     }
 
     onMouseUp(event) {
+        event.stopPropagation();
+        event.preventDefault();
         if (this.playButton.isMouseOver(event)) {
             this.playButton.triggerHandler();
             document.body.style.cursor = "default";
@@ -68,6 +70,8 @@ class MenuScene {
     }
 
     onTouchEnd(event) {
+        event.stopPropagation();
+        event.preventDefault();
         if (this.playButton.isTouchOver(event)) {
             changeState(1);
             document.body.style.cursor = "default";
