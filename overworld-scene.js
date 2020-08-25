@@ -42,6 +42,7 @@ class OverworldScene {
 
         this.quests = [];
         this.quests.push({ width: 3, height: 3, successRail: 1, successNode: 0 });
+        this.quests.push({ width: 3, height: 3, successRail: 0, successNode: 3 });
 
 
         for (let i = 0; i < 256; i++) {
@@ -357,10 +358,22 @@ class OverworldScene {
                 if (!(this.player.x == this.player.target.x && this.player.y == this.player.target.y)) {
                     return;
                 }
-                if (this.camera.x + parseInt(event.changedTouches[0].clientX) > this.player.x) {
-                    this.moveToNextNode();
-                } else if (this.camera.x + parseInt(event.changedTouches[0].clientX) < this.player.x) {
-                    this.moveToPreviousNode();
+                //is this touch more vertical or horizontal?
+                let touchX = parseInt(event.changedTouches[0].clientX);
+                let touchY = parseInt(event.changedTouches[0].clientY);
+
+                if (Math.abs((this.camera.x + touchX) - this.player.x) > Math.abs((this.camera.y + touchY) - this.player.y)) {
+                    if (this.camera.x + touchX > this.player.x) {
+                        this.moveToNextNode();
+                    } else if (this.camera.x + touchX < this.player.x) {
+                        this.moveToPreviousNode();
+                    }
+                } else {
+                    if (this.camera.y + touchY > this.player.y) {
+                        this.jumpDownRail();
+                    } else if (this.camera.y + touchY < this.player.y) {
+                        this.jumpUpRail();
+                    }
                 }
             }
         }
@@ -415,7 +428,7 @@ class Rail {
     }
 
     buildRailTwo() {
-        this.vertexes.push(this.createNode(1280, 1152 + 30));
+        this.vertexes.push(this.createNode(1280, 1152 + 30, 1));
         this.vertexes.push(this.createVertex(1408, 1152 + 30));
         this.vertexes.push(this.createVertex(1536, 1280));
         this.vertexes.push(this.createNode(1664, 1280));
