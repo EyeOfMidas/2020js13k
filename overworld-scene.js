@@ -158,18 +158,22 @@ class OverworldScene {
             playerInputReceived = true;
         }
 
-        if (keys[KeyCode.A] || keys[KeyCode.Left]) {
-            // this.player.x += -this.player.movementSpeed * delta;
-            // this.player.target.x = this.player.x;
-            this.moveToPreviousNode();
-            playerInputReceived = true;
-        }
 
-        if (keys[KeyCode.D] || keys[KeyCode.Right] && nextNode) {
-            // this.player.x += this.player.movementSpeed * delta;
-            // this.player.target.x = this.player.x;
-            this.moveToNextNode();
-            playerInputReceived = true;
+        if (this.player.x == this.player.target.x && this.player.y == this.player.target.y) {
+
+            if (keys[KeyCode.A] || keys[KeyCode.Left]) {
+                // this.player.x += -this.player.movementSpeed * delta;
+                // this.player.target.x = this.player.x;
+                this.moveToPreviousNode();
+                playerInputReceived = true;
+            }
+
+            if (keys[KeyCode.D] || keys[KeyCode.Right] && nextNode) {
+                // this.player.x += this.player.movementSpeed * delta;
+                // this.player.target.x = this.player.x;
+                this.moveToNextNode();
+                playerInputReceived = true;
+            }
         }
 
         if (Math.abs(this.player.x - this.player.target.x) <= this.player.movementSpeed) {
@@ -265,14 +269,26 @@ class OverworldScene {
             dragCompleted = true;
             this.camera.x -= dragDelta.x;
             this.camera.y -= dragDelta.y;
+
+        }
+        //if (event.button == 2) { //startDrag.time + 100 >= new Date().getUTCMilliseconds()
+        // this.player.target.x = this.camera.x + event.clientX;
+        // this.player.target.y = this.camera.y + event.clientY;
+        if (Math.abs(dragDelta.x) > 0 || Math.abs(dragDelta.y) > 0) {
             dragDelta.x = 0;
             dragDelta.y = 0;
-        }
-        if (event.button == 2) { //startDrag.time + 100 >= new Date().getUTCMilliseconds()
-            this.player.target.x = this.camera.x + event.clientX;
-            this.player.target.y = this.camera.y + event.clientY;
             return;
         }
+        if (!(this.player.x == this.player.target.x && this.player.y == this.player.target.y)) {
+            return;
+        }
+        if (this.camera.x + parseInt(event.clientX) > this.player.x) {
+            this.moveToNextNode();
+        } else if (this.camera.x + parseInt(event.clientX) < this.player.x) {
+            this.moveToPreviousNode();
+        }
+        //return;
+        //}
 
     }
 
@@ -330,8 +346,16 @@ class OverworldScene {
             }
 
             if (!isDragging && !dragCompleted) {
-                this.player.target.x = this.camera.x + parseInt(event.changedTouches[0].clientX);
-                this.player.target.y = this.camera.y + parseInt(event.changedTouches[0].clientY);
+                if (!(this.player.x == this.player.target.x && this.player.y == this.player.target.y)) {
+                    return;
+                }
+                //this.player.target.x = this.camera.x + parseInt(event.changedTouches[0].clientX);
+                //this.player.target.y = this.camera.y + parseInt(event.changedTouches[0].clientY);
+                if (this.camera.x + parseInt(event.changedTouches[0].clientX) > this.player.x) {
+                    this.moveToNextNode();
+                } else if (this.camera.x + parseInt(event.changedTouches[0].clientX) < this.player.x) {
+                    this.moveToPreviousNode();
+                }
             }
         }
     }
