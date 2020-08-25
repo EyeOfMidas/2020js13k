@@ -26,6 +26,12 @@ class PuzzleScene {
             offset: { x: 100, y: 100 },
             tileSize: { width: 50, height: 50 },
         };
+        if (puzzleRules.width > 0) {
+            this.board.width = puzzleRules.width;
+        }
+        if (puzzleRules.height > 0) {
+            this.board.height = puzzleRules.height;
+        }
         // this.board.width = maxWidth + 1;
         // this.board.height = maxHeight + 1;
         this.board.offset = { x: (canvas.width / 2) - (this.board.width * this.board.tileSize.width) / 2, y: (canvas.height / 2) - (this.board.height * this.board.tileSize.height) / 2 };
@@ -130,7 +136,7 @@ class PuzzleScene {
 
     isEndingConditionMet(currentTile) {
         if (this.board.width >= this.board.height) {
-            return currentTile.x < this.board.width - 1;
+            return currentTile.x <= this.board.width - 1;
         }
         return currentTile.y < this.board.height - 1;
     }
@@ -178,6 +184,9 @@ class PuzzleScene {
         this.calculatePower(this.pathTiles[0]);
         if (this.pathTiles[this.pathTiles.length - 1].isPowered) {
             this.isWon = true;
+            saveData.player.rail = puzzleRules.successRail;
+            saveData.player.railnode = puzzleRules.successNode;
+            saveGame();
             this.splashTextTweenId = Tween.create(this.splashText, { x: canvas.width / 2 }, 3000, Tween.Easing.Elastic.EaseOut, () => {
                 setTimeout(() => {
                     changeState(1);

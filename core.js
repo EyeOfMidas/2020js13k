@@ -20,8 +20,10 @@ var activeState = states[0];
 var saveData = {
     player: { rail: 0, railnode: 0 },
     camera: { x: 1280, y: 1280 },
-    solves: 0,
+    unlocked: [],
 };
+
+var puzzleRules = { width: 0, height: 0, successRail: 0, successNode: 0 };
 
 function animate() {
     context.save();
