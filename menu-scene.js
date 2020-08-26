@@ -57,7 +57,6 @@ class MenuScene {
     }
 
     onMouseUp(event) {
-        event.stopPropagation();
         event.preventDefault();
         if (this.playButton.isMouseOver(event)) {
             this.playButton.triggerHandler();
@@ -70,10 +69,14 @@ class MenuScene {
     }
 
     onTouchEnd(event) {
-        event.stopPropagation();
         event.preventDefault();
         if (this.playButton.isTouchOver(event)) {
-            changeState(1);
+            this.playButton.triggerHandler();
+            document.body.style.cursor = "default";
+        }
+
+        if (this.deleteSave.isTouchOver(event)) {
+            this.deleteSave.triggerHandler();
             document.body.style.cursor = "default";
         }
     }
@@ -125,8 +128,11 @@ class Button {
     }
 
     isTouchOver(event) {
-        return event.changedTouches[0].clientX > this.x - (this.width / 2) && event.changedTouches[0].clientX < this.x + this.width - (this.width / 2) &&
-            event.changedTouches[0].clientY > this.y - (this.height / 2) && event.changedTouches[0].clientY < this.y + this.height - (this.height / 2);
+        let touchX = parseInt(event.changedTouches[0].clientX);
+        let touchY = parseInt(event.changedTouches[0].clientY);
+
+        return touchX > this.x - (this.width / 2) && touchX < this.x + this.width - (this.width / 2) &&
+            touchY > this.y - (this.height / 2) && touchY < this.y + this.height - (this.height / 2);
     }
 
     triggerHandler() {

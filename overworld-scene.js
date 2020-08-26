@@ -34,7 +34,7 @@ class OverworldScene {
         this.rails = [];
         for (let i = 0; i < railData.length; i++) {
             let rail = new Rail();
-            rail.vertexes = railData[i];
+            rail.setPath(railData[i]);
             this.rails.push(rail);
         }
 
@@ -71,7 +71,7 @@ class OverworldScene {
     }
 
     getRailNode(rail, node) {
-        return this.rails[rail].vertexes[node];
+        return this.rails[rail].getPath()[node];
     }
 
     update(delta) {
@@ -451,6 +451,13 @@ class Quest {
 class Rail {
     constructor() {
         this.vertexes = [];
+    }
+
+    setPath(vertexes) {
+        this.vertexes = vertexes;
+    }
+    getPath() {
+        return this.vertexes;
     }
 
     draw(context) {
