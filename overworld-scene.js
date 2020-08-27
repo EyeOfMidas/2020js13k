@@ -6,6 +6,8 @@ class OverworldScene {
         this.player = {};
         this.quests = [];
         this.rails = [];
+        this.events = [];
+        this.script = [];
     }
 
     init() {
@@ -19,13 +21,16 @@ class OverworldScene {
 
         var railData = [
             [
-                { x: 896, y: 1024, node: 10, },
+                // { x: 768, y: 1024, node: 10 },
+                { x: 896, y: 1024, node: 10, enter: 0 },
                 { x: 1024, y: 1024 },
                 { x: 1152, y: 1152 },
-                { x: 1280, y: 1152, node: 10, down: 0 },
+                { x: 1280, y: 1152, node: 10, down: 0, enter: 1 },
+                { x: 1408, y: 1024 },
+                { x: 1536, y: 1024, node: 10 },
             ],
             [
-                { x: 1280, y: 1152 + 30, node: 10, up: 1 },
+                { x: 1280, y: 1152 + 30, node: 10, up: 1, enter: 2 },
                 { x: 1408, y: 1152 + 30 },
                 { x: 1536, y: 1280 },
                 { x: 1664, y: 1280, node: 10 },
@@ -60,6 +65,10 @@ class OverworldScene {
         this.quests.push({ width: 3, height: 3, successRail: 1, successNode: 0 });
         this.quests.push({ width: 3, height: 3, successRail: 0, successNode: 3 });
 
+        this.events = [];
+        this.events.push(this.event0.bind(this));
+        this.events.push(this.event1.bind(this));
+        this.events.push(this.event2.bind(this));
 
         for (let i = 0; i < 256; i++) {
             keys[i] = false;
@@ -72,9 +81,9 @@ class OverworldScene {
         this.dialog = new Dialog();
 
         this.script = [];
-        this.script.push({ character: 1, side: 1, text: "What are you doing here?" });
-        this.script.push({ character: 0, side: 0, text: "Oh, uh... hello there :D" });
-        this.script.push({ character: 1, side: 1, text: "What are you looking for?" });
+        if (currentNode.enter != null) {
+            this.events[currentNode.enter]();
+        }
     }
 
     getRailNode(rail, node) {
@@ -100,8 +109,6 @@ class OverworldScene {
         } else {
             this.dialog.hide();
         }
-
-
         this.updatePlayer(delta);
 
         // if (this.quest.withinBounds(this.player)) {
@@ -231,6 +238,10 @@ class OverworldScene {
             let currentNode = this.getRailNode(this.player.rail, this.player.railnode);
             if (!currentNode.node) {
                 this.moveToPreviousNode();
+            } else {
+                if (currentNode.enter != null) {
+                    this.events[currentNode.enter]();
+                }
             }
         }
         if (nextNode && this.player.x == nextNode.x && this.player.y == nextNode.y) {
@@ -239,6 +250,10 @@ class OverworldScene {
             let currentNode = this.getRailNode(this.player.rail, this.player.railnode);
             if (!currentNode.node) {
                 this.moveToNextNode();
+            } else {
+                if (currentNode.enter != null) {
+                    this.events[currentNode.enter]();
+                }
             }
         }
 
@@ -417,10 +432,10 @@ class OverworldScene {
             }
 
             if (!isDragging && !dragCompleted) {
-                // if (this.script.length > 0) {
-                //     this.script.shift();
-                //     return;
-                // }
+                if (this.script.length > 0) {
+                    //     this.script.shift();
+                    return;
+                }
 
                 if (!(this.player.x == this.player.target.x && this.player.y == this.player.target.y)) {
                     return;
@@ -444,6 +459,38 @@ class OverworldScene {
                 }
             }
         }
+    }
+    event0() {
+        if (saveData.unlocked.includes(0)) {
+            return;
+        }
+        console.log("got event 0", this.script, this);
+        this.script.push({ character: 1, side: 1, text: "What are you doing here?" });
+        this.script.push({ character: 0, side: 0, text: "Oh, uh... hello there :D" });
+        this.script.push({ character: 1, side: 1, text: "What are you looking for?" });
+        saveData.unlocked.push(0);
+
+    }
+    event1() {
+        if (saveData.unlocked.includes(1)) {
+            return;
+        }
+        this.script.push({ character: 1, side: 1, text: "That connection is broken." });
+        this.script.push({ character: 0, side: 0, text: "So I can't go this way?" });
+        this.script.push({ character: 1, side: 1, text: "Not unless you can fix the connection." });
+        saveData.unlocked.push(1);
+
+    }
+
+    event2() {
+        if (saveData.unlocked.includes(2)) {
+            return;
+        }
+        this.script.push({ character: 1, side: 1, text: "How did you get here?" });
+        this.script.push({ character: 0, side: 0, text: "I made the thingie light up?" });
+        this.script.push({ character: 1, side: 1, text: "You can't be here! Stop it." });
+        saveData.unlocked.push(2);
+
     }
 }
 
