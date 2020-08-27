@@ -68,6 +68,8 @@ class OverworldScene {
         dragCompleted = false;
         isDragging = false;
         this.updateCamera(0);
+
+        this.dialog = new Dialog();
     }
 
     getRailNode(rail, node) {
@@ -85,6 +87,8 @@ class OverworldScene {
         //     changeState(2);
         // }
 
+        this.dialog.update(delta);
+
         if (keys[KeyCode.Esc]) {
             this.player.rail = 0;
             this.player.railnode = 0;
@@ -101,6 +105,8 @@ class OverworldScene {
         this.drawPlayer(context);
 
         context.restore();
+
+        this.dialog.draw(context);
     }
 
     saveScene() {
@@ -301,6 +307,7 @@ class OverworldScene {
     onResize() {
         this.camera.center.x = canvas.width / 2;
         this.camera.center.y = canvas.height / 2;
+        this.dialog.onResize();
     }
 
     onMouseUp(event) {

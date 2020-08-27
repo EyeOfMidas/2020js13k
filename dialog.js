@@ -1,13 +1,69 @@
 class Dialog {
     constructor() {
+        this.height = 200;
+        this.margin = { left: 16, bottom: 16, right: 16 };
+        this.padding = { left: 8, top: 8, right: 8 };
+        this.width = canvas.width;
+        this.fontSize = 32;
+        this.fontSize = this.width / 30;
     }
 
     display(character, side, text) {
 
     }
 
+    update(delta) {
+    }
+
     draw(context) {
 
+        context.save();
+        context.translate(this.margin.left, canvas.height - this.height);
+        let text = "This is a dialog box. I can make it pretty long to see if it would wrap. On a large screen, this takes a lot of text to do. Surprisingly, I can fit quite a bit of text if I use a text wrap. I might need to consider the character portrait, too...";
+        context.fillStyle = "rgba(0, 0, 0, 0.5)";
+        context.beginPath();
+        context.rect(0, 0, this.width - (this.margin.left + this.margin.right), this.height - this.margin.bottom);
+        context.fill();
+
+        context.fillStyle = "white";
+        context.textAlign = "left";
+        context.font = `${this.fontSize}px Arial`;
+
+        let line = 1;
+        while (this.textIsTooLong(text, context)) {
+            let bounds = context.measureText(text);
+            let textHeight = bounds.actualBoundingBoxAscent + bounds.actualBoundingBoxDescent;
+            let shortTextIndex = this.getShortTextIndex(text, context);
+            let shortText = text.substr(0, shortTextIndex);
+            text = text.substr(shortTextIndex);
+            context.fillText(shortText, this.padding.left, this.padding.top + (line * textHeight));
+            line++;
+        }
+        let bounds = context.measureText(text);
+        let textHeight = bounds.actualBoundingBoxAscent + bounds.actualBoundingBoxDescent;
+        context.fillText(text, this.padding.left, this.padding.top + (line * textHeight));
+
+        context.restore();
+    }
+
+    getShortTextIndex(text, context) {
+        while (this.textIsTooLong(text, context)) {
+            let words = text.split(" ");
+            words.pop();
+            text = words.join(" ");
+        }
+        return text.length;
+    }
+
+    textIsTooLong(text, context) {
+        let bounds = context.measureText(text);
+        return bounds.width > this.width - (this.padding.left + this.padding.right + this.margin.left + this.margin.right);
+    }
+
+    onResize() {
+        this.width = canvas.width;
+
+        this.fontSize = this.width / 30;
     }
 }
 
