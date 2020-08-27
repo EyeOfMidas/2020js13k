@@ -6,6 +6,7 @@ class Dialog {
         this.width = canvas.width;
         this.fontSize = 32;
         this.fontSize = this.width / 25;
+        this.portrait = { width: 100, height: 128 };
     }
 
     display(character, side, text) {
@@ -19,6 +20,17 @@ class Dialog {
 
         context.save();
         context.translate(this.margin.left, canvas.height - this.height);
+
+        context.fillStyle = "blue";
+        context.beginPath();
+        context.rect(0, - this.portrait.height - 16, this.portrait.width, this.portrait.height);
+        context.fill();
+
+        context.fillStyle = "red";
+        context.beginPath();
+        context.rect(this.width - (this.margin.left + this.margin.right + this.portrait.width), - this.portrait.height - 16, this.portrait.width, this.portrait.height);
+        context.fill();
+
         let text = "This is a dialog box. I can make it pretty long to see if it would wrap. On a large screen, this takes a lot of text to do. Surprisingly, I can fit quite a bit of text.";
         context.fillStyle = "rgba(0, 0, 0, 0.5)";
         context.beginPath();
