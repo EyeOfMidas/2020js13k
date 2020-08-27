@@ -7,10 +7,19 @@ class Dialog {
         this.fontSize = 32;
         this.fontSize = this.width / 25;
         this.portrait = { width: 100, height: 128 };
+        this.side = 1;//Math.floor(2 * Math.random());
+        this.text = "This is a dialog box. I can make it pretty long to see if it would wrap. On a large screen, this takes a lot of text to do. Surprisingly, I can fit quite a bit of text.";
+
+        this.characters = [];
+        this.characters.push(new HeroCharacter());
+        this.characters.push(new VillainCharacter());
+        this.character = this.characters[1];
     }
 
     display(character, side, text) {
-
+        this.character = this.characters[character];
+        this.side = side;
+        this.text = text;
     }
 
     update(delta) {
@@ -21,17 +30,29 @@ class Dialog {
         context.save();
         context.translate(this.margin.left, canvas.height - this.height);
 
-        context.fillStyle = "blue";
-        context.beginPath();
-        context.rect(0, - this.portrait.height - 16, this.portrait.width, this.portrait.height);
-        context.fill();
+        if (this.side == 0) {
+            context.save();
+            context.translate(0, -this.portrait.height - 16);
+            context.fillStyle = "rgba(0, 0, 0, 0.5)";
+            context.beginPath();
+            context.rect(0, 0, this.portrait.width, this.portrait.height);
+            context.fill();
 
-        context.fillStyle = "red";
-        context.beginPath();
-        context.rect(this.width - (this.margin.left + this.margin.right + this.portrait.width), - this.portrait.height - 16, this.portrait.width, this.portrait.height);
-        context.fill();
+            this.character.draw(context);
+            context.restore();
+        }
 
-        let text = "This is a dialog box. I can make it pretty long to see if it would wrap. On a large screen, this takes a lot of text to do. Surprisingly, I can fit quite a bit of text.";
+        if (this.side == 1) {
+            context.save();
+            context.translate(this.width - (this.margin.left + this.margin.right + this.portrait.width), - this.portrait.height - 16);
+            context.fillStyle = "rgba(0, 0, 0, 0.5)";
+            context.beginPath();
+            context.rect(0, 0, this.portrait.width, this.portrait.height);
+            context.fill();
+            this.character.draw(context);
+            context.restore();
+        }
+
         context.fillStyle = "rgba(0, 0, 0, 0.5)";
         context.beginPath();
         context.rect(0, 0, this.width - (this.margin.left + this.margin.right), this.height - this.margin.bottom);
@@ -42,6 +63,7 @@ class Dialog {
         context.font = `${this.fontSize}px Arial`;
 
         let line = 1;
+        let text = this.text;
         while (this.textIsTooLong(text, context)) {
             let shortTextIndex = this.getShortTextIndex(text, context);
             let shortText = text.substr(0, shortTextIndex);
@@ -78,6 +100,101 @@ class Dialog {
         this.width = canvas.width;
 
         this.fontSize = Math.min(32, this.width / 25);
+    }
+}
+
+class HeroCharacter {
+    constructor() {
+        this.currentMood = 0;
+    }
+
+    setMood(newMood) {
+        this.currentMood = newMood;
+    }
+
+    draw(context) {
+        switch (this.currentMood) {
+            case 0:
+            default:
+                context.fillStyle = Color.LightBlue;
+                context.beginPath();
+                context.rect(10, 20, 80, 80);
+                context.fill();
+
+                context.strokeStyle = "black";
+                context.fillStyle = "black";
+                context.lineWidth = 6;
+                context.beginPath();
+                context.arc(25, 50, 10, Math.PI, 2 * Math.PI);
+                context.stroke();
+                context.beginPath();
+                context.arc(75, 50, 10, Math.PI, 2 * Math.PI);
+                context.stroke();
+                context.beginPath();
+                context.arc(50, 75, 10, 0, Math.PI);
+                context.fill();
+                break;
+        }
+    }
+}
+
+class VillainCharacter {
+    constructor() {
+        this.currentMood = 1;
+    }
+
+    setMood(newMood) {
+        this.currentMood = newMood;
+    }
+
+    draw(context) {
+        switch (this.currentMood) {
+            case 1:
+            default:
+                context.fillStyle = "gray";
+                context.beginPath();
+                context.arc(20, 35, 10, Math.PI / 2, 3 * Math.PI / 2);
+                context.rect(20, 25, 60, 20);
+                context.arc(80, 35, 10, 3 * Math.PI / 2, Math.PI / 2);
+                context.fill();
+                context.beginPath();
+                context.arc(20, 55, 10, Math.PI / 2, 3 * Math.PI / 2);
+                context.rect(20, 45, 60, 20);
+                context.arc(80, 55, 10, 3 * Math.PI / 2, Math.PI / 2);
+                context.fill();
+                context.beginPath();
+                context.arc(20, 75, 10, Math.PI / 2, 3 * Math.PI / 2);
+                context.rect(20, 65, 60, 20);
+                context.arc(80, 75, 10, 3 * Math.PI / 2, Math.PI / 2);
+                context.fill();
+                context.beginPath();
+                context.arc(20, 95, 10, Math.PI / 2, 3 * Math.PI / 2);
+                context.rect(20, 85, 60, 20);
+                context.arc(80, 95, 10, 3 * Math.PI / 2, Math.PI / 2);
+                context.fill();
+
+                context.fillStyle = "black";
+                context.beginPath();
+                context.moveTo(30, 40);
+                context.lineTo(45, 50);
+                context.lineTo(25, 50);
+                context.lineTo(30, 40);
+                context.fill();
+
+                context.beginPath();
+                context.moveTo(70, 40);
+                context.lineTo(55, 50);
+                context.lineTo(75, 50);
+                context.lineTo(70, 40);
+                context.fill();
+
+                context.lineWidth = 6;
+                context.beginPath();
+                context.moveTo(40, 65);
+                context.lineTo(60, 65);
+                context.stroke();
+                break;
+        }
     }
 }
 
