@@ -22,7 +22,9 @@ class OverworldScene {
         var railData = [
             {
                 isActivated: true,
+                isVisible: true,
                 activationUnlock: 0,
+                visibleUnlock: 0,
                 path: [
                     // { x: 768, y: 1024, node: 10 },
                     { x: 896, y: 1024, node: 10, enter: 0 },
@@ -31,25 +33,47 @@ class OverworldScene {
                     { x: 1280, y: 1152, node: 10, down: 0, enter: 1 },
                     { x: 1408, y: 1024 },
                     { x: 1536, y: 1024, node: 10 },
-                ]
+                ],
+                pathUnlocks: [
+                    { node: 5, unlock: 3, up: 2 },
+                ],
             },
             {
                 isActivated: false,
+                isVisible: true,
                 activationUnlock: 2,
+                visibleUnlock: 0,
                 path: [
                     { x: 1280, y: 1152 + 30, node: 10, up: 1, enter: 2 },
                     { x: 1408, y: 1152 + 30 },
                     { x: 1536, y: 1280 },
-                    { x: 1664, y: 1280, node: 10 },
-                ]
+                    { x: 1664, y: 1280, node: 10, enter: 3 },
+                ],
+                pathUnlocks: [],
+            },
+            {
+                isActivated: false,
+                isVisible: false,
+                activationUnlock: 4,
+                visibleUnlock: 3,
+                path: [
+                    { x: 1536, y: 1024 - 30, node: 10, down: 3, enter: 4 },
+                    { x: 1664, y: 896 },
+                    { x: 1664, y: 768 },
+                    { x: 1792, y: 768, node: 10 },
+                ],
+                pathUnlocks: [],
             },
         ];
         this.rails = [];
         for (let i = 0; i < railData.length; i++) {
             let rail = new Rail();
             rail.setPath(railData[i].path);
+            rail.setPathUnlocks(railData[i].pathUnlocks);
             rail.activationUnlock = railData[i].activationUnlock;
-            rail.isActivated = railData[i].isActivated || saveData.unlocked.includes(rail.activationUnlock);
+            rail.visibleUnlock = railData[i].visibleUnlock;
+            rail.isActivated = railData[i].isActivated;// || saveData.unlocked.includes(rail.activationUnlock);
+            rail.isVisible = railData[i].isVisible;// || saveData.unlocked.includes(rail.visibleUnlock);
             this.rails.push(rail);
         }
 
@@ -74,6 +98,8 @@ class OverworldScene {
         this.quests = [];
         this.quests.push({ width: 3, height: 3, successRail: 1, successNode: 0 });
         this.quests.push({ width: 3, height: 3, successRail: 0, successNode: 3 });
+        this.quests.push({ width: 3, height: 8, successRail: 2, successNode: 0 });
+        this.quests.push({ width: 3, height: 8, successRail: 0, successNode: 5 });
 
         this.events = [];
 
@@ -95,6 +121,21 @@ class OverworldScene {
         railEvent.addDialog(1, 1, "You can't be here! Stop it.");
         this.events.push(railEvent);
 
+        railEvent = new RailEvent(this, 3);
+        railEvent.addDialog(0, 0, "Hey, are you there?");
+        railEvent.addDialog(1, 1, "You're still here? What do you want?");
+        railEvent.addDialog(0, 0, "I'm stuck. What do I do now?");
+        railEvent.addDialog(1, 1, "Go away. Go back where you came from. You're not allowed here.");
+
+        this.events.push(railEvent);
+
+        railEvent = new RailEvent(this, 4);
+        railEvent.addDialog(1, 1, "This is getting tiresome.");
+        railEvent.addDialog(0, 0, "I want to see where this goes! ;)");
+        railEvent.addDialog(1, 1, "Nowhere fast.");
+
+        this.events.push(railEvent);
+
         for (let i = 0; i < 256; i++) {
             keys[i] = false;
         }
@@ -108,15 +149,21 @@ class OverworldScene {
         this.script = [];
         if (currentNode.enter != null) {
             this.events[currentNode.enter].run();
-            this.updateRailUnlocks();
-
         }
+        this.updateRailUnlocks();
     }
 
     updateRailUnlocks() {
         for (let i = 0; i < this.rails.length; i++) {
             let rail = this.rails[i];
-            rail.isActivated = saveData.unlocked.includes(rail.activationUnlock);
+            rail.isActivated = rail.activationUnlock == 0 || saveData.unlocked.includes(rail.activationUnlock);
+            rail.isVisible = rail.visibleUnlock == 0 || saveData.unlocked.includes(rail.visibleUnlock);
+            for (let j = 0; j < rail.pathUnlocks.length; j++) {
+                let unlock = rail.pathUnlocks[j];
+                if (saveData.unlocked.includes(unlock.unlock)) {
+                    rail.vertexes[unlock.node].up = unlock.up;
+                }
+            }
         }
     }
 
@@ -164,6 +211,7 @@ class OverworldScene {
         saveData.camera.x = this.camera.x;
         saveData.camera.y = this.camera.y;
         saveGame();
+        this.updateRailUnlocks();
     }
 
     updateCamera(delta) {
@@ -205,6 +253,9 @@ class OverworldScene {
         context.lineWidth = 4;
         for (let i = 0; i < this.rails.length; i++) {
             let rail = this.rails[i];
+            if (!rail.isVisible) {
+                continue;
+            }
             if (rail.isActivated) {
                 context.strokeStyle = Color.LightBlue;
             } else {
@@ -334,9 +385,9 @@ class OverworldScene {
     }
 
     jumpUpRail() {
-        let currentRail = this.getRailNode(this.player.rail, this.player.railnode);
-        if (null != currentRail.up) {
-            let quest = this.quests[currentRail.up];
+        let currentRailNode = this.getRailNode(this.player.rail, this.player.railnode);
+        if (null != currentRailNode.up) {
+            let quest = this.quests[currentRailNode.up];
             puzzleRules = quest;
             this.saveScene();
             changeState(2);
@@ -463,7 +514,6 @@ class OverworldScene {
 
             if (!isDragging && !dragCompleted) {
                 if (this.script.length > 0) {
-                    //     this.script.shift();
                     return;
                 }
 
@@ -497,6 +547,8 @@ class Rail {
         this.vertexes = [];
         this.isActivated = false;
         this.activationUnlock = 0;
+        this.visibleUnlock = 0;
+        this.pathUnlocks = [];
     }
 
     setPath(vertexes) {
@@ -504,6 +556,10 @@ class Rail {
     }
     getPath() {
         return this.vertexes;
+    }
+
+    setPathUnlocks(unlocks) {
+        this.pathUnlocks = unlocks;
     }
 
     draw(context) {
