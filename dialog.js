@@ -16,7 +16,7 @@ class Dialog {
         this.characters.push(new VillainCharacter());
         this.character = this.characters[this.side];
 
-        this.isDisplaying = true;
+        this.isDisplaying = false;
     }
 
     display(character, side, text) {

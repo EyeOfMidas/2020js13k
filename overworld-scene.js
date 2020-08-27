@@ -70,6 +70,11 @@ class OverworldScene {
         this.updateCamera(0);
 
         this.dialog = new Dialog();
+
+        this.script = [];
+        this.script.push({ character: 1, side: 1, text: "What are you doing here?" });
+        this.script.push({ character: 0, side: 0, text: "Oh, uh... hello there :D" });
+        this.script.push({ character: 1, side: 1, text: "What are you looking for?" });
     }
 
     getRailNode(rail, node) {
@@ -79,15 +84,6 @@ class OverworldScene {
     update(delta) {
         gameTicks++;
         this.updateBackground(delta);
-        // this.quest.update(delta);
-        this.updatePlayer(delta);
-
-        // if (this.quest.withinBounds(this.player)) {
-        //     this.saveScene();
-        //     changeState(2);
-        // }
-
-        this.dialog.update(delta);
 
         if (keys[KeyCode.Esc]) {
             this.player.rail = 0;
@@ -95,6 +91,26 @@ class OverworldScene {
             this.saveScene();
             changeState(0);
         }
+
+        // this.quest.update(delta);
+        if (this.script.length > 0) {
+            this.dialog.display(this.script[0].character, this.script[0].side, this.script[0].text);
+            this.dialog.update(delta);
+            return;
+        } else {
+            this.dialog.hide();
+        }
+
+
+        this.updatePlayer(delta);
+
+        // if (this.quest.withinBounds(this.player)) {
+        //     this.saveScene();
+        //     changeState(2);
+        // }
+
+
+
     }
     draw(context) {
         context.save();
@@ -311,6 +327,7 @@ class OverworldScene {
     }
 
     onMouseUp(event) {
+
         if (isDragging) {
             isDragging = false;
             dragCompleted = true;
@@ -323,6 +340,11 @@ class OverworldScene {
             dragDelta.y = 0;
             return;
         }
+        if (this.script.length > 0) {
+            this.script.shift();
+            return;
+        }
+
         if (!(this.player.x == this.player.target.x && this.player.y == this.player.target.y)) {
             return;
         }
@@ -395,6 +417,11 @@ class OverworldScene {
             }
 
             if (!isDragging && !dragCompleted) {
+                // if (this.script.length > 0) {
+                //     this.script.shift();
+                //     return;
+                // }
+
                 if (!(this.player.x == this.player.target.x && this.player.y == this.player.target.y)) {
                     return;
                 }
