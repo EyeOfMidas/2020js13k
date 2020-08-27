@@ -3,7 +3,7 @@
 
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
     <style type="text/css">
         html,
         body {
@@ -23,10 +23,19 @@
             height: 100vh;
 
         }
+
+        #debugger-output {
+            color: red;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+        }
     </style>
 </head>
 
 <body>
+    <div id="debugger-output"></div>
     <div id="game"></div>
     <!-- <script src="./min.js"></script> -->
     <script src="./KeyCode.js"></script>

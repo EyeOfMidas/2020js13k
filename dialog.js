@@ -1,11 +1,11 @@
 class Dialog {
     constructor() {
-        this.height = 200;
+        this.height = 150;
         this.margin = { left: 16, bottom: 16, right: 16 };
         this.padding = { left: 8, top: 8, right: 8 };
         this.width = canvas.width;
         this.fontSize = 32;
-        this.fontSize = this.width / 30;
+        this.fontSize = this.width / 25;
     }
 
     display(character, side, text) {
@@ -19,7 +19,7 @@ class Dialog {
 
         context.save();
         context.translate(this.margin.left, canvas.height - this.height);
-        let text = "This is a dialog box. I can make it pretty long to see if it would wrap. On a large screen, this takes a lot of text to do. Surprisingly, I can fit quite a bit of text if I use a text wrap. I might need to consider the character portrait, too...";
+        let text = "This is a dialog box. I can make it pretty long to see if it would wrap. On a large screen, this takes a lot of text to do. Surprisingly, I can fit quite a bit of text.";
         context.fillStyle = "rgba(0, 0, 0, 0.5)";
         context.beginPath();
         context.rect(0, 0, this.width - (this.margin.left + this.margin.right), this.height - this.margin.bottom);
@@ -31,19 +31,21 @@ class Dialog {
 
         let line = 1;
         while (this.textIsTooLong(text, context)) {
-            let bounds = context.measureText(text);
-            let textHeight = bounds.actualBoundingBoxAscent + bounds.actualBoundingBoxDescent;
             let shortTextIndex = this.getShortTextIndex(text, context);
             let shortText = text.substr(0, shortTextIndex);
             text = text.substr(shortTextIndex);
-            context.fillText(shortText, this.padding.left, this.padding.top + (line * textHeight));
+            this.drawTextLine(shortText, context, line);
             line++;
         }
-        let bounds = context.measureText(text);
-        let textHeight = bounds.actualBoundingBoxAscent + bounds.actualBoundingBoxDescent;
-        context.fillText(text, this.padding.left, this.padding.top + (line * textHeight));
 
+        this.drawTextLine(text, context, line);
         context.restore();
+    }
+
+    drawTextLine(text, context, line) {
+        let bounds = context.measureText(text);
+        let textHeight = Math.max(this.fontSize, bounds.actualBoundingBoxAscent + bounds.actualBoundingBoxDescent);
+        context.fillText(text, this.padding.left, this.padding.top + (line * textHeight));
     }
 
     getShortTextIndex(text, context) {
@@ -63,7 +65,7 @@ class Dialog {
     onResize() {
         this.width = canvas.width;
 
-        this.fontSize = this.width / 30;
+        this.fontSize = Math.min(32, this.width / 25);
     }
 }
 

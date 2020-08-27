@@ -51,10 +51,12 @@ function init() {
 }
 
 function changeState(id) {
+    document.getElementById("debugger-output").innerHTML = "";
     try {
         states[id].init();
     } catch (e) {
         console.error("Something went wrong while changing state:", e);
+        document.getElementById("debugger-output").innerHTML = e.toString();
         return;
     }
     activeState = states[id];
