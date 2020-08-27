@@ -14,19 +14,28 @@ class Dialog {
         this.characters.push(new HeroCharacter());
         this.characters.push(new VillainCharacter());
         this.character = this.characters[1];
+
+        this.isDisplaying = false;
     }
 
     display(character, side, text) {
         this.character = this.characters[character];
         this.side = side;
         this.text = text;
+        this.isDisplaying = true;
+    }
+
+    hide() {
+        this.isDisplaying = false;
     }
 
     update(delta) {
     }
 
     draw(context) {
-
+        if (!this.isDisplaying) {
+            return;
+        }
         context.save();
         context.translate(this.margin.left, canvas.height - this.height);
 
