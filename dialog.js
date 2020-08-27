@@ -7,15 +7,16 @@ class Dialog {
         this.fontSize = 32;
         this.fontSize = this.width / 25;
         this.portrait = { width: 100, height: 128 };
-        this.side = 1;//Math.floor(2 * Math.random());
+        this.portraitFloat = 16;
+        this.side = 0;
         this.text = "This is a dialog box. I can make it pretty long to see if it would wrap. On a large screen, this takes a lot of text to do. Surprisingly, I can fit quite a bit of text.";
 
         this.characters = [];
         this.characters.push(new HeroCharacter());
         this.characters.push(new VillainCharacter());
-        this.character = this.characters[1];
+        this.character = this.characters[this.side];
 
-        this.isDisplaying = false;
+        this.isDisplaying = true;
     }
 
     display(character, side, text) {
@@ -30,6 +31,7 @@ class Dialog {
     }
 
     update(delta) {
+        this.portraitFloat = 16 + (4 * Math.sin(new Date().getTime() / 100));
     }
 
     draw(context) {
@@ -41,7 +43,7 @@ class Dialog {
 
         if (this.side == 0) {
             context.save();
-            context.translate(0, -this.portrait.height - 16);
+            context.translate(0, -this.portrait.height - this.portraitFloat);
             context.fillStyle = "rgba(0, 0, 0, 0.5)";
             context.beginPath();
             context.rect(0, 0, this.portrait.width, this.portrait.height);
@@ -53,7 +55,7 @@ class Dialog {
 
         if (this.side == 1) {
             context.save();
-            context.translate(this.width - (this.margin.left + this.margin.right + this.portrait.width), - this.portrait.height - 16);
+            context.translate(this.width - (this.margin.left + this.margin.right + this.portrait.width), - this.portrait.height - this.portraitFloat);
             context.fillStyle = "rgba(0, 0, 0, 0.5)";
             context.beginPath();
             context.rect(0, 0, this.portrait.width, this.portrait.height);
@@ -140,7 +142,7 @@ class HeroCharacter {
                 context.arc(75, 50, 10, Math.PI, 2 * Math.PI);
                 context.stroke();
                 context.beginPath();
-                context.arc(50, 75, 10, 0, Math.PI);
+                context.arc(50, 65, 10, 0, Math.PI);
                 context.fill();
                 break;
         }
