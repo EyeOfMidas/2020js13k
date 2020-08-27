@@ -20,26 +20,36 @@ class OverworldScene {
         };
 
         var railData = [
-            [
-                // { x: 768, y: 1024, node: 10 },
-                { x: 896, y: 1024, node: 10, enter: 0 },
-                { x: 1024, y: 1024 },
-                { x: 1152, y: 1152 },
-                { x: 1280, y: 1152, node: 10, down: 0, enter: 1 },
-                { x: 1408, y: 1024 },
-                { x: 1536, y: 1024, node: 10 },
-            ],
-            [
-                { x: 1280, y: 1152 + 30, node: 10, up: 1, enter: 2 },
-                { x: 1408, y: 1152 + 30 },
-                { x: 1536, y: 1280 },
-                { x: 1664, y: 1280, node: 10 },
-            ],
+            {
+                isActivated: true,
+                activationUnlock: 0,
+                path: [
+                    // { x: 768, y: 1024, node: 10 },
+                    { x: 896, y: 1024, node: 10, enter: 0 },
+                    { x: 1024, y: 1024 },
+                    { x: 1152, y: 1152 },
+                    { x: 1280, y: 1152, node: 10, down: 0, enter: 1 },
+                    { x: 1408, y: 1024 },
+                    { x: 1536, y: 1024, node: 10 },
+                ]
+            },
+            {
+                isActivated: false,
+                activationUnlock: 2,
+                path: [
+                    { x: 1280, y: 1152 + 30, node: 10, up: 1, enter: 2 },
+                    { x: 1408, y: 1152 + 30 },
+                    { x: 1536, y: 1280 },
+                    { x: 1664, y: 1280, node: 10 },
+                ]
+            },
         ];
         this.rails = [];
         for (let i = 0; i < railData.length; i++) {
             let rail = new Rail();
-            rail.setPath(railData[i]);
+            rail.setPath(railData[i].path);
+            rail.activationUnlock = railData[i].activationUnlock;
+            rail.isActivated = railData[i].isActivated || saveData.unlocked.includes(rail.activationUnlock);
             this.rails.push(rail);
         }
 
@@ -66,9 +76,24 @@ class OverworldScene {
         this.quests.push({ width: 3, height: 3, successRail: 0, successNode: 3 });
 
         this.events = [];
-        this.events.push(this.event0.bind(this));
-        this.events.push(this.event1.bind(this));
-        this.events.push(this.event2.bind(this));
+
+        let railEvent = new RailEvent(this, 0);
+        railEvent.addDialog(1, 1, "What are you doing here?");
+        railEvent.addDialog(0, 0, "Oh, uh... hello there :D");
+        railEvent.addDialog(1, 1, "What are you looking for?");
+        this.events.push(railEvent);
+
+        railEvent = new RailEvent(this, 1);
+        railEvent.addDialog(1, 1, "That connection is broken.");
+        railEvent.addDialog(0, 0, "So I can't go this way?");
+        railEvent.addDialog(1, 1, "Not unless you can fix the connection.");
+        this.events.push(railEvent);
+
+        railEvent = new RailEvent(this, 2);
+        railEvent.addDialog(1, 1, "How did you get here?");
+        railEvent.addDialog(0, 0, "I made the thingie light up?");
+        railEvent.addDialog(1, 1, "You can't be here! Stop it.");
+        this.events.push(railEvent);
 
         for (let i = 0; i < 256; i++) {
             keys[i] = false;
@@ -82,7 +107,16 @@ class OverworldScene {
 
         this.script = [];
         if (currentNode.enter != null) {
-            this.events[currentNode.enter]();
+            this.events[currentNode.enter].run();
+            this.updateRailUnlocks();
+
+        }
+    }
+
+    updateRailUnlocks() {
+        for (let i = 0; i < this.rails.length; i++) {
+            let rail = this.rails[i];
+            rail.isActivated = saveData.unlocked.includes(rail.activationUnlock);
         }
     }
 
@@ -110,14 +144,6 @@ class OverworldScene {
             this.dialog.hide();
         }
         this.updatePlayer(delta);
-
-        // if (this.quest.withinBounds(this.player)) {
-        //     this.saveScene();
-        //     changeState(2);
-        // }
-
-
-
     }
     draw(context) {
         context.save();
@@ -176,10 +202,14 @@ class OverworldScene {
     }
 
     drawRail(context) {
-        context.strokeStyle = Color.LightBlue;
         context.lineWidth = 4;
         for (let i = 0; i < this.rails.length; i++) {
             let rail = this.rails[i];
+            if (rail.isActivated) {
+                context.strokeStyle = Color.LightBlue;
+            } else {
+                context.strokeStyle = Color.DarkBlue;
+            }
             rail.draw(context);
         }
     }
@@ -240,7 +270,7 @@ class OverworldScene {
                 this.moveToPreviousNode();
             } else {
                 if (currentNode.enter != null) {
-                    this.events[currentNode.enter]();
+                    this.events[currentNode.enter].run();
                 }
             }
         }
@@ -252,7 +282,7 @@ class OverworldScene {
                 this.moveToNextNode();
             } else {
                 if (currentNode.enter != null) {
-                    this.events[currentNode.enter]();
+                    this.events[currentNode.enter].run();
                 }
             }
         }
@@ -460,78 +490,13 @@ class OverworldScene {
             }
         }
     }
-    event0() {
-        if (saveData.unlocked.includes(0)) {
-            return;
-        }
-        console.log("got event 0", this.script, this);
-        this.script.push({ character: 1, side: 1, text: "What are you doing here?" });
-        this.script.push({ character: 0, side: 0, text: "Oh, uh... hello there :D" });
-        this.script.push({ character: 1, side: 1, text: "What are you looking for?" });
-        saveData.unlocked.push(0);
-
-    }
-    event1() {
-        if (saveData.unlocked.includes(1)) {
-            return;
-        }
-        this.script.push({ character: 1, side: 1, text: "That connection is broken." });
-        this.script.push({ character: 0, side: 0, text: "So I can't go this way?" });
-        this.script.push({ character: 1, side: 1, text: "Not unless you can fix the connection." });
-        saveData.unlocked.push(1);
-
-    }
-
-    event2() {
-        if (saveData.unlocked.includes(2)) {
-            return;
-        }
-        this.script.push({ character: 1, side: 1, text: "How did you get here?" });
-        this.script.push({ character: 0, side: 0, text: "I made the thingie light up?" });
-        this.script.push({ character: 1, side: 1, text: "You can't be here! Stop it." });
-        saveData.unlocked.push(2);
-
-    }
-}
-
-class Quest {
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
-        this.bounds = { width: 25, height: 25 };
-    }
-
-    update(delta) {
-        this.y += 0.4 * Math.sin((8 * gameTicks % 360) * (Math.PI / 180));
-    }
-
-    draw(context) {
-        context.fillStyle = Color.White;
-        context.beginPath();
-        context.moveTo(this.x, this.y - 70);
-        context.bezierCurveTo(this.x - 25, this.y - 70, this.x - 10, this.y - 20, this.x, this.y - 20);
-        context.bezierCurveTo(this.x + 10, this.y - 20, this.x + 25, this.y - 70, this.x, this.y - 70);
-        context.fill();
-
-        context.beginPath();
-        context.arc(this.x, this.y + 0, 10, 0, 2 * Math.PI);
-        context.fill();
-
-        // context.strokeStyle = Color.LightBlue;
-        // context.beginPath();
-        // context.rect(this.x - (this.bounds.width / 2), this.y - (this.bounds.height / 2), this.bounds.width, this.bounds.height);
-        // context.stroke();
-    }
-
-    withinBounds(player) {
-        return player.x > this.x - (this.bounds.width / 2) && player.y > this.y - (this.bounds.height / 2) &&
-            player.x < (this.x - (this.bounds.width / 2)) + this.bounds.width && player.y < (this.y - (this.bounds.height / 2)) + this.bounds.height;
-    }
 }
 
 class Rail {
     constructor() {
         this.vertexes = [];
+        this.isActivated = false;
+        this.activationUnlock = 0;
     }
 
     setPath(vertexes) {
@@ -562,5 +527,25 @@ class Rail {
             context.arc(lastVertex.x, lastVertex.y, lastVertex.node, 0, 2 * Math.PI);
             context.stroke();
         }
+    }
+}
+
+class RailEvent {
+    constructor(container, lock) {
+        this.container = container;
+        this.lock = lock;
+        this.script = [];
+    }
+
+    addDialog(character, side, text) {
+        this.script.push({ character: character, side: side, text: text });
+    }
+
+    run() {
+        if (saveData.unlocked.includes(this.lock)) {
+            return;
+        }
+        this.container.script = this.container.script.concat(this.script);
+        saveData.unlocked.push(this.lock);
     }
 }
