@@ -172,9 +172,6 @@ class OverworldScene {
     }
 
     update(delta) {
-        gameTicks++;
-        this.updateBackground(delta);
-
         if (keys[KeyCode.Esc]) {
             this.player.rail = 0;
             this.player.railnode = 0;
@@ -182,7 +179,6 @@ class OverworldScene {
             changeState(0);
         }
 
-        // this.quest.update(delta);
         if (this.script.length > 0) {
             this.dialog.display(this.script[0].character, this.script[0].side, this.script[0].text);
             this.dialog.update(delta);
@@ -238,9 +234,6 @@ class OverworldScene {
         if (playerRatioY > 0.7) {
             this.camera.y = this.player.y - (0.7 * canvas.height);
         }
-    }
-
-    updateBackground(delta) {
     }
 
     drawBackground(context) {
@@ -507,41 +500,42 @@ class OverworldScene {
     }
 
     onTouchEnd(event) {
-        if (event.touches.length == 0) { //I've let go of all points
-            if (isDragging) {
-                isDragging = false;
-                dragCompleted = true;
-                this.camera.x -= dragDelta.x;
-                this.camera.y -= dragDelta.y;
-                dragDelta.x = 0;
-                dragDelta.y = 0;
+        if (event.touches.length != 0) { //I've let go of all points
+            return;
+        }
+        if (isDragging) {
+            isDragging = false;
+            dragCompleted = true;
+            this.camera.x -= dragDelta.x;
+            this.camera.y -= dragDelta.y;
+            dragDelta.x = 0;
+            dragDelta.y = 0;
+            return;
+        }
+
+        if (!isDragging && !dragCompleted) {
+            if (this.script.length > 0) {
                 return;
             }
 
-            if (!isDragging && !dragCompleted) {
-                if (this.script.length > 0) {
-                    return;
-                }
+            if (!(this.player.x == this.player.target.x && this.player.y == this.player.target.y)) {
+                return;
+            }
+            //is this touch more vertical or horizontal?
+            let touchX = parseInt(event.changedTouches[0].clientX);
+            let touchY = parseInt(event.changedTouches[0].clientY);
 
-                if (!(this.player.x == this.player.target.x && this.player.y == this.player.target.y)) {
-                    return;
+            if (Math.abs((this.camera.x + touchX) - this.player.x) > Math.abs((this.camera.y + touchY) - this.player.y)) {
+                if (this.camera.x + touchX > this.player.x) {
+                    this.moveToNextNode();
+                } else if (this.camera.x + touchX < this.player.x) {
+                    this.moveToPreviousNode();
                 }
-                //is this touch more vertical or horizontal?
-                let touchX = parseInt(event.changedTouches[0].clientX);
-                let touchY = parseInt(event.changedTouches[0].clientY);
-
-                if (Math.abs((this.camera.x + touchX) - this.player.x) > Math.abs((this.camera.y + touchY) - this.player.y)) {
-                    if (this.camera.x + touchX > this.player.x) {
-                        this.moveToNextNode();
-                    } else if (this.camera.x + touchX < this.player.x) {
-                        this.moveToPreviousNode();
-                    }
-                } else {
-                    if (this.camera.y + touchY > this.player.y) {
-                        this.jumpDownRail();
-                    } else if (this.camera.y + touchY < this.player.y) {
-                        this.jumpUpRail();
-                    }
+            } else {
+                if (this.camera.y + touchY > this.player.y) {
+                    this.jumpDownRail();
+                } else if (this.camera.y + touchY < this.player.y) {
+                    this.jumpUpRail();
                 }
             }
         }
@@ -586,7 +580,6 @@ class Rail {
                 context.moveTo(vertex.x, vertex.y);
             }
             if (nextVertex.node) {
-                // let angle = -Math.atan2(vertex.x - nextVertex.x, vertex.y - nextVertex.y) - (90 * Math.PI / 180);
                 context.lineTo(nextVertex.x - nextVertex.node * Math.cos(angle), nextVertex.y - nextVertex.node * Math.sin(angle));
             } else {
                 context.lineTo(nextVertex.x, nextVertex.y);
