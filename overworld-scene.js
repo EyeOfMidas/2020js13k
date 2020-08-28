@@ -186,6 +186,12 @@ class OverworldScene {
         if (this.script.length > 0) {
             this.dialog.display(this.script[0].character, this.script[0].side, this.script[0].text);
             this.dialog.update(delta);
+
+            if (keys[KeyCode.Space] || keys[KeyCode.Enter]) {
+                this.script.shift();
+                keys[KeyCode.Space] = false;
+                keys[KeyCode.Enter] = false;
+            }
             return;
         } else {
             this.dialog.hide();
