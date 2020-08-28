@@ -14,6 +14,7 @@ class Dialog {
         this.characters = [];
         this.characters.push(new HeroCharacter());
         this.characters.push(new VillainCharacter());
+        this.characters.push(new EmptyCharacter());
         this.character = this.characters[this.side];
 
         this.isDisplaying = false;
@@ -206,6 +207,13 @@ class VillainCharacter {
                 context.stroke();
                 break;
         }
+    }
+}
+
+class EmptyCharacter {
+    constructor() {
+    }
+    draw(context) {
     }
 }
 

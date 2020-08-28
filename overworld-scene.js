@@ -60,7 +60,7 @@ class OverworldScene {
                     { x: 1536, y: 1024 - 30, node: 10, down: 3, enter: 4 },
                     { x: 1664, y: 896 },
                     { x: 1664, y: 768 },
-                    { x: 1792, y: 768, node: 10 },
+                    { x: 1792, y: 768, node: 10, enter: 5 },
                 ],
                 pathUnlocks: [],
             },
@@ -133,6 +133,11 @@ class OverworldScene {
         railEvent.addDialog(1, 1, "This is getting tiresome.");
         railEvent.addDialog(0, 0, "I want to see where this goes! ;)");
         railEvent.addDialog(1, 1, "Nowhere fast.");
+
+        this.events.push(railEvent);
+
+        railEvent = new RailEvent(this, 5);
+        railEvent.addDialog(2, 1, "To be continued...");
 
         this.events.push(railEvent);
 
