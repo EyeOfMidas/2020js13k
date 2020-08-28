@@ -5,8 +5,16 @@ class MenuScene {
     }
 
     init() {
-        this.playButton = new Button(canvas.width / 2, canvas.height / 2, "Play", () => { changeState(1); });
-        this.deleteSave = new Button(canvas.width / 2, canvas.height - 100, "Delete Save", () => { if (confirm('Are you sure you want to delete your game save?')) { deleteGame(); alert("Save deleted.") } });
+        this.playButton = new Button(canvas.width / 2, canvas.height / 2, "Play", () => {
+            changeState(1);
+        });
+        this.deleteSave = new Button(canvas.width / 2, canvas.height - 100, "Delete Save", () => {
+            if (confirm('Are you sure you want to delete your game save?')) {
+                deleteGame();
+                alert("Save deleted.");
+                window.location.reload();
+            }
+        });
         this.deleteSave.width = 100;
         this.deleteSave.height = 40;
         this.deleteSave.fontSize = 18;

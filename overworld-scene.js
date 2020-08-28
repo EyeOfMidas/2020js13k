@@ -572,8 +572,19 @@ class Rail {
                 context.stroke();
             }
             context.beginPath();
-            context.moveTo(vertex.x, vertex.y);
-            context.lineTo(nextVertex.x, nextVertex.y);
+            let angle = -Math.atan2(vertex.x - nextVertex.x, vertex.y - nextVertex.y) - (90 * Math.PI / 180);
+
+            if (vertex.node) {
+                context.moveTo(vertex.x + vertex.node * Math.cos(angle), vertex.y + vertex.node * Math.sin(angle));
+            } else {
+                context.moveTo(vertex.x, vertex.y);
+            }
+            if (nextVertex.node) {
+                // let angle = -Math.atan2(vertex.x - nextVertex.x, vertex.y - nextVertex.y) - (90 * Math.PI / 180);
+                context.lineTo(nextVertex.x - nextVertex.node * Math.cos(angle), nextVertex.y - nextVertex.node * Math.sin(angle));
+            } else {
+                context.lineTo(nextVertex.x, nextVertex.y);
+            }
             context.stroke();
         }
 
