@@ -60,7 +60,35 @@ class OverworldScene {
                     { x: 1536, y: 1024 - 30, node: 10, down: 3, enter: 4 },
                     { x: 1664, y: 896 },
                     { x: 1664, y: 768 },
-                    { x: 1792, y: 768, node: 10, enter: 5 },
+                    { x: 1792, y: 640, node: 10, enter: 5 },
+                ],
+                pathUnlocks: [],
+            },
+            {
+                isActivated: false,
+                isVisible: false,
+                activationUnlock: 6,
+                visibleUnlock: 5,
+                path: [
+                    { x: 1792, y: 640 - 30, node: 10, enter: 6 },
+                    { x: 1920, y: 768, },
+                    { x: 2048, y: 768 },
+                    { x: 2176, y: 896, node: 10 },
+                ],
+                pathUnlocks: [],
+            },
+            {
+                isActivated: false,
+                isVisible: false,
+                activationUnlock: 6,
+                visibleUnlock: 5,
+                path: [
+                    { x: 1792, y: 640 + 30, node: 10, enter: 6 },
+                    { x: 1920 - 30, y: 768 + 30, },
+                    { x: 2048, y: 768 + 30 },
+                    { x: 2176, y: 896 + 30 },
+                    { x: 2304 - 30, y: 1024 },
+                    { x: 2432, y: 1024, node: 10 },
                 ],
                 pathUnlocks: [],
             },
@@ -97,9 +125,9 @@ class OverworldScene {
 
         this.quests = [];
         this.quests.push({ width: 3, height: 3, successRail: 1, successNode: 0 });
-        this.quests.push({ width: 3, height: 3, successRail: 0, successNode: 3 });
-        this.quests.push({ width: 3, height: 8, successRail: 2, successNode: 0 });
-        this.quests.push({ width: 3, height: 8, successRail: 0, successNode: 5 });
+        this.quests.push({ width: 3, height: 4, successRail: 0, successNode: 3 });
+        this.quests.push({ width: 4, height: 4, successRail: 2, successNode: 0 });
+        this.quests.push({ width: 5, height: 4, successRail: 0, successNode: 5 });
 
         this.events = [];
 
@@ -107,6 +135,8 @@ class OverworldScene {
         railEvent.addDialog(1, 1, "What are you doing here?");
         railEvent.addDialog(0, 0, "Oh, uh... hello there :D");
         railEvent.addDialog(1, 1, "What are you looking for?");
+        railEvent.addDialog(0, 0, "I'm here to... pick something up.");
+        railEvent.addDialog(1, 1, "Ha! This place is so old you'll never find what you're looking for.");
         this.events.push(railEvent);
 
         railEvent = new RailEvent(this, 1);
