@@ -54,13 +54,13 @@ class OverworldScene {
             {
                 isActivated: false,
                 isVisible: false,
-                activationUnlock: 4,
+                activationUnlock: 6,
                 visibleUnlock: 3,
                 path: [
                     { x: 1536, y: 1024 - 30, node: 10, down: 3, enter: 4 },
                     { x: 1664, y: 896 },
                     { x: 1664, y: 768 },
-                    { x: 1792, y: 640, node: 10, enter: 5 },
+                    { x: 1792, y: 640, node: 10, enter: 5, up: 4, down: 5 },
                 ],
                 pathUnlocks: [],
             },
@@ -68,27 +68,27 @@ class OverworldScene {
                 isActivated: false,
                 isVisible: false,
                 activationUnlock: 6,
-                visibleUnlock: 5,
+                visibleUnlock: 4,
                 path: [
-                    { x: 1792, y: 640 - 30, node: 10, enter: 6 },
+                    { x: 1792, y: 640 - 30, node: 10, enter: 6, down: 6 },
                     { x: 1920, y: 768, },
                     { x: 2048, y: 768 },
-                    { x: 2176, y: 896, node: 10 },
+                    { x: 2176, y: 896, node: 10, enter: 7 },
                 ],
                 pathUnlocks: [],
             },
             {
                 isActivated: false,
                 isVisible: false,
-                activationUnlock: 6,
+                activationUnlock: 8,
                 visibleUnlock: 5,
                 path: [
-                    { x: 1792, y: 640 + 30, node: 10, enter: 6 },
+                    { x: 1792, y: 640 + 30, node: 10, up: 7, enter: 8 },
                     { x: 1920 - 30, y: 768 + 30, },
                     { x: 2048, y: 768 + 30 },
                     { x: 2176, y: 896 + 30 },
                     { x: 2304 - 30, y: 1024 },
-                    { x: 2432, y: 1024, node: 10 },
+                    { x: 2432, y: 1024, node: 10, enter: 9 },
                 ],
                 pathUnlocks: [],
             },
@@ -128,48 +128,90 @@ class OverworldScene {
         this.quests.push({ width: 3, height: 4, successRail: 0, successNode: 3 });
         this.quests.push({ width: 4, height: 4, successRail: 2, successNode: 0 });
         this.quests.push({ width: 5, height: 4, successRail: 0, successNode: 5 });
+        this.quests.push({ width: 5, height: 8, successRail: 3, successNode: 0 });
+        this.quests.push({ width: 5, height: 8, successRail: 4, successNode: 0 });
+        this.quests.push({ width: 5, height: 4, successRail: 2, successNode: 3 });
+        this.quests.push({ width: 5, height: 4, successRail: 2, successNode: 3 });
 
         this.events = [];
 
-        let railEvent = new RailEvent(this, 0);
-        railEvent.addDialog(1, 1, "What are you doing here?");
-        railEvent.addDialog(0, 0, "Oh, uh... hello there :D");
-        railEvent.addDialog(1, 1, "What are you looking for?");
-        railEvent.addDialog(0, 0, "I'm here to... pick something up.");
-        railEvent.addDialog(1, 1, "Ha! This place is so old you'll never find what you're looking for.");
-        this.events.push(railEvent);
+        var eventData = [
+            {
+                lock: 0,
+                dialog: [
+                    { c: 1, s: 1, t: "What are you doing here?" },
+                    { c: 0, s: 0, t: "Oh, uh... hello there :D" },
+                    { c: 1, s: 1, t: "What are you looking for?" },
+                    { c: 0, s: 0, t: "I'm here to... pick something up." },
+                    { c: 1, s: 1, t: "Ha! This place is so old you'll never find what you're looking for." },
+                ],
+            },
+            {
+                lock: 1,
+                dialog: [
+                    { c: 1, s: 1, t: "That connection is broken." },
+                    { c: 0, s: 0, t: "So I can't go this way?" },
+                    { c: 1, s: 1, t: "Not unless you can fix the connection." },
+                ],
+            },
+            {
+                lock: 2,
+                dialog: [
+                    { c: 1, s: 1, t: "How did you get here?" },
+                    { c: 0, s: 0, t: "I made the thingie light up?" },
+                    { c: 1, s: 1, t: "You can't be here! Stop it." },
+                ],
+            },
+            {
+                lock: 3,
+                dialog: [
+                    { c: 0, s: 0, t: "Hey, are you there?" },
+                    { c: 1, s: 1, t: "You're still here? What do you want?" },
+                    { c: 0, s: 0, t: "I'm stuck. What do I do now?" },
+                    { c: 1, s: 1, t: "Go away. Go back where you came from. You're not allowed here." },
+                ],
+            },
 
-        railEvent = new RailEvent(this, 1);
-        railEvent.addDialog(1, 1, "That connection is broken.");
-        railEvent.addDialog(0, 0, "So I can't go this way?");
-        railEvent.addDialog(1, 1, "Not unless you can fix the connection.");
-        this.events.push(railEvent);
+            {
+                lock: 4,
+                dialog: [
+                    { c: 1, s: 1, t: "This is getting tiresome." },
+                    { c: 0, s: 0, t: "I want to see where this goes! ;)" },
+                    { c: 1, s: 1, t: "Nowhere fast." },
+                ],
+            },
+            {
+                lock: 5,
+                dialog: [
+                    { c: 2, s: 1, t: "To be continued..." },
+                ],
+            },
+            {
+                lock: 6,
+                dialog: [],
+            },
+            {
+                lock: 7,
+                dialog: [],
+            },
+            {
+                lock: 8,
+                dialog: [],
+            },
+            {
+                lock: 9,
+                dialog: [],
+            },
+        ];
 
-        railEvent = new RailEvent(this, 2);
-        railEvent.addDialog(1, 1, "How did you get here?");
-        railEvent.addDialog(0, 0, "I made the thingie light up?");
-        railEvent.addDialog(1, 1, "You can't be here! Stop it.");
-        this.events.push(railEvent);
-
-        railEvent = new RailEvent(this, 3);
-        railEvent.addDialog(0, 0, "Hey, are you there?");
-        railEvent.addDialog(1, 1, "You're still here? What do you want?");
-        railEvent.addDialog(0, 0, "I'm stuck. What do I do now?");
-        railEvent.addDialog(1, 1, "Go away. Go back where you came from. You're not allowed here.");
-
-        this.events.push(railEvent);
-
-        railEvent = new RailEvent(this, 4);
-        railEvent.addDialog(1, 1, "This is getting tiresome.");
-        railEvent.addDialog(0, 0, "I want to see where this goes! ;)");
-        railEvent.addDialog(1, 1, "Nowhere fast.");
-
-        this.events.push(railEvent);
-
-        railEvent = new RailEvent(this, 5);
-        railEvent.addDialog(2, 1, "To be continued...");
-
-        this.events.push(railEvent);
+        for (let i = 0; i < eventData.length; i++) {
+            let data = eventData[i];
+            let railEvent = new RailEvent(this, data.lock);
+            for (let j = 0; j < data.dialog.length; j++) {
+                railEvent.addDialog(data.dialog[j].c, data.dialog[j].s, data.dialog[j].t);
+            }
+            this.events.push(railEvent);
+        }
 
         for (let i = 0; i < 256; i++) {
             keys[i] = false;
@@ -194,9 +236,10 @@ class OverworldScene {
             rail.isActivated = rail.activationUnlock == 0 || saveData.unlocked.includes(rail.activationUnlock);
             rail.isVisible = rail.visibleUnlock == 0 || saveData.unlocked.includes(rail.visibleUnlock);
             for (let j = 0; j < rail.pathUnlocks.length; j++) {
-                let unlock = rail.pathUnlocks[j];
-                if (saveData.unlocked.includes(unlock.unlock)) {
-                    rail.vertexes[unlock.node].up = unlock.up;
+                let pathUnlock = rail.pathUnlocks[j];
+                if (saveData.unlocked.includes(pathUnlock.unlock)) {
+                    rail.vertexes[pathUnlock.node].up = pathUnlock.up;
+                    rail.vertexes[pathUnlock.node].down = pathUnlock.down;
                 }
             }
         }

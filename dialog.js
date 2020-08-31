@@ -270,3 +270,18 @@ class SplashText {
         context.restore();
     }
 }
+
+class FadingHelp {
+    constructor() {
+        this.delay = new Date().getTime() + 5000;
+    }
+
+    update(delta) {
+    }
+
+    draw(context) {
+    }
+
+    mouseHelp(context) {
+    }
+}
