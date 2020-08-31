@@ -54,7 +54,7 @@ class OverworldScene {
             {
                 isActivated: false,
                 isVisible: false,
-                activationUnlock: 6,
+                activationUnlock: 4,
                 visibleUnlock: 3,
                 path: [
                     { x: 1536, y: 1024 - 30, node: 10, down: 3, enter: 4 },
@@ -332,11 +332,6 @@ class OverworldScene {
             let rail = this.rails[i];
             if (!rail.isVisible) {
                 continue;
-            }
-            if (rail.isActivated) {
-                context.strokeStyle = Color.LightBlue;
-            } else {
-                context.strokeStyle = Color.DarkBlue;
             }
             rail.draw(context);
         }
@@ -641,24 +636,38 @@ class Rail {
     }
 
     draw(context) {
+        if (this.isActivated) {
+            context.strokeStyle = Color.LightBlue;
+        } else {
+            context.strokeStyle = Color.DarkBlue;
+        }
+        let activeNodeWobble = 2 + (1 * Math.sin(new Date().getTime() / 100));
         for (let i = 0; i < this.vertexes.length - 1; i++) {
             let vertex = this.vertexes[i];
             let nextVertex = this.vertexes[i + 1];
+            let radius = vertex.node;
+            let nextRadius = nextVertex.node;
             if (vertex.node) {
                 context.beginPath();
-                context.arc(vertex.x, vertex.y, vertex.node, 0, 2 * Math.PI);
+                if (this.isActivated) {
+                    radius = vertex.node - activeNodeWobble;
+                }
+                context.arc(vertex.x, vertex.y, radius, 0, 2 * Math.PI);
                 context.stroke();
             }
             context.beginPath();
             let angle = -Math.atan2(vertex.x - nextVertex.x, vertex.y - nextVertex.y) - (90 * Math.PI / 180);
 
             if (vertex.node) {
-                context.moveTo(vertex.x + vertex.node * Math.cos(angle), vertex.y + vertex.node * Math.sin(angle));
+                context.moveTo(vertex.x + radius * Math.cos(angle), vertex.y + radius * Math.sin(angle));
             } else {
                 context.moveTo(vertex.x, vertex.y);
             }
             if (nextVertex.node) {
-                context.lineTo(nextVertex.x - nextVertex.node * Math.cos(angle), nextVertex.y - nextVertex.node * Math.sin(angle));
+                if (this.isActivated) {
+                    nextRadius = nextVertex.node - activeNodeWobble;
+                }
+                context.lineTo(nextVertex.x - nextRadius * Math.cos(angle), nextVertex.y - nextRadius * Math.sin(angle));
             } else {
                 context.lineTo(nextVertex.x, nextVertex.y);
             }
@@ -667,8 +676,12 @@ class Rail {
 
         let lastVertex = this.vertexes[this.vertexes.length - 1];
         if (lastVertex.node) {
+            let lastRadius = lastVertex.node;
+            if (this.isActivated) {
+                lastRadius = lastVertex.node - activeNodeWobble;
+            }
             context.beginPath();
-            context.arc(lastVertex.x, lastVertex.y, lastVertex.node, 0, 2 * Math.PI);
+            context.arc(lastVertex.x, lastVertex.y, lastRadius, 0, 2 * Math.PI);
             context.stroke();
         }
     }
