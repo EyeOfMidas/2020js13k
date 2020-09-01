@@ -207,7 +207,9 @@ class OverworldScene {
             {
                 lock: 5,
                 dialog: [
-                    { c: 2, s: 1, t: "To be continued..." },
+                    { c: 1, s: 1, t: "You are a persistent little square, aren't you?" },
+                    { c: 0, s: 0, t: "I have to get something. Do you know where I can get it from?" },
+                    { c: 1, s: 1, t: "I might have an idea..." },
                 ],
             },
             {
