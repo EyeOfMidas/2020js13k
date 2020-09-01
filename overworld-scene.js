@@ -87,6 +87,7 @@ class OverworldScene {
                 unlocks: {
                     isVisible: 6,
                     isActivated: 8,
+                    isDamaged: 9,
                 },
                 path: [
                     { x: 1792, y: 640 + 30, node: 10, up: 7, enter: 8 },
@@ -95,6 +96,20 @@ class OverworldScene {
                     { x: 2176, y: 896 + 30 },
                     { x: 2304 - 30, y: 1024 },
                     { x: 2432, y: 1024, node: 10, enter: 9 },
+                ],
+                pathUnlocks: [
+                    { node: 5, unlock: 9, down: 8 },
+                ],
+            },
+            {
+                unlocks: {
+                    isVisible: 9,
+                    isActivated: 10,
+                },
+                path: [
+                    { x: 2176, y: 1152, node: 10 },
+                    { x: 2304, y: 1024 + 30, },
+                    { x: 2432, y: 1024 + 30, node: 10, enter: 8 },
                 ],
                 pathUnlocks: [],
             },
@@ -214,12 +229,14 @@ class OverworldScene {
                     { c: 0, s: 0, t: "Woah! This is what I was looking for!" },
                     { c: 1, s: 1, t: "It's not what you think. Plus, you still have to get it out of here." },
                 ],
+                teleport: { rail: 5, node: 3 },
             },
         ];
 
         for (let i = 0; i < eventData.length; i++) {
             let data = eventData[i];
             let railEvent = new RailEvent(this, data.lock);
+            railEvent.teleport = data.teleport;
             for (let j = 0; j < data.dialog.length; j++) {
                 railEvent.addDialog(data.dialog[j].c, data.dialog[j].s, data.dialog[j].t);
             }
@@ -730,6 +747,7 @@ class RailEvent {
         this.container = container;
         this.lock = lock;
         this.script = [];
+        this.teleport = null;
     }
 
     addDialog(character, side, text) {
@@ -737,6 +755,10 @@ class RailEvent {
     }
 
     run() {
+        if (this.teleport) {
+            this.container.player.rail = this.teleport.rail;
+            this.container.player.railnode = this.teleport.node;
+        }
         if (saveData.unlocked.includes(this.lock)) {
             return;
         }
