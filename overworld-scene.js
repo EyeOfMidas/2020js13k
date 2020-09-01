@@ -21,10 +21,11 @@ class OverworldScene {
 
         var railData = [
             {
-                isActivated: true,
-                isVisible: true,
-                activationUnlock: 0,
-                visibleUnlock: 0,
+                unlocks: {
+                    isVisible: 0,
+                    isActivated: 0,
+                    isDamaged: 9,
+                },
                 path: [
                     // { x: 768, y: 1024, node: 10 },
                     { x: 896, y: 1024, node: 10, enter: 0 },
@@ -39,10 +40,11 @@ class OverworldScene {
                 ],
             },
             {
-                isActivated: false,
-                isVisible: true,
-                activationUnlock: 2,
-                visibleUnlock: 0,
+                unlocks: {
+                    isVisible: 0,
+                    isActivated: 2,
+                    isDamaged: 9,
+                },
                 path: [
                     { x: 1280, y: 1152 + 30, node: 10, up: 1, enter: 2 },
                     { x: 1408, y: 1152 + 30 },
@@ -52,10 +54,11 @@ class OverworldScene {
                 pathUnlocks: [],
             },
             {
-                isActivated: false,
-                isVisible: false,
-                activationUnlock: 4,
-                visibleUnlock: 3,
+                unlocks: {
+                    isVisible: 3,
+                    isActivated: 4,
+                    isDamaged: 9,
+                },
                 path: [
                     { x: 1536, y: 1024 - 30, node: 10, down: 3, enter: 4 },
                     { x: 1664, y: 896 },
@@ -67,10 +70,11 @@ class OverworldScene {
                 ],
             },
             {
-                isActivated: false,
-                isVisible: false,
-                activationUnlock: 6,
-                visibleUnlock: 4,
+                unlocks: {
+                    isVisible: 4,
+                    isActivated: 6,
+                    isDamaged: 9,
+                },
                 path: [
                     { x: 1792, y: 640 - 30, node: 10, enter: 6, down: 6 },
                     { x: 1920, y: 768, },
@@ -80,10 +84,10 @@ class OverworldScene {
                 pathUnlocks: [],
             },
             {
-                isActivated: false,
-                isVisible: false,
-                activationUnlock: 8,
-                visibleUnlock: 6,
+                unlocks: {
+                    isVisible: 6,
+                    isActivated: 8,
+                },
                 path: [
                     { x: 1792, y: 640 + 30, node: 10, up: 7, enter: 8 },
                     { x: 1920 - 30, y: 768 + 30, },
@@ -100,10 +104,7 @@ class OverworldScene {
             let rail = new Rail();
             rail.setPath(railData[i].path);
             rail.setPathUnlocks(railData[i].pathUnlocks);
-            rail.activationUnlock = railData[i].activationUnlock;
-            rail.visibleUnlock = railData[i].visibleUnlock;
-            rail.isActivated = railData[i].isActivated;// || saveData.unlocked.includes(rail.activationUnlock);
-            rail.isVisible = railData[i].isVisible;// || saveData.unlocked.includes(rail.visibleUnlock);
+            rail.unlocks = railData[i].unlocks;
             this.rails.push(rail);
         }
 
@@ -245,8 +246,9 @@ class OverworldScene {
     updateRailUnlocks() {
         for (let i = 0; i < this.rails.length; i++) {
             let rail = this.rails[i];
-            rail.isActivated = rail.activationUnlock == 0 || saveData.unlocked.includes(rail.activationUnlock);
-            rail.isVisible = rail.visibleUnlock == 0 || saveData.unlocked.includes(rail.visibleUnlock);
+            for (let index in rail.unlocks) {
+                rail[index] = rail.unlocks[index] == 0 || saveData.unlocked.includes(rail.unlocks[index]);
+            }
             for (let j = 0; j < rail.pathUnlocks.length; j++) {
                 let pathUnlock = rail.pathUnlocks[j];
                 if (saveData.unlocked.includes(pathUnlock.unlock)) {
@@ -283,6 +285,7 @@ class OverworldScene {
             this.dialog.hide();
         }
         this.updatePlayer(delta);
+        this.updateRails(delta);
     }
     draw(context) {
         context.save();
@@ -335,6 +338,16 @@ class OverworldScene {
                 context.rect(x * 128, y * 128, 128, 128);
                 context.fill();
             }
+        }
+    }
+
+    updateRails(delta) {
+        for (let i = 0; i < this.rails.length; i++) {
+            let rail = this.rails[i];
+            if (!rail.isVisible) {
+                continue;
+            }
+            rail.update(delta);
         }
     }
 
@@ -630,10 +643,17 @@ class OverworldScene {
 class Rail {
     constructor() {
         this.vertexes = [];
+        this.isVisible = false;
         this.isActivated = false;
+        this.isDamaged = false;
         this.activationUnlock = 0;
         this.visibleUnlock = 0;
+        this.unlocks = {
+            isVisible: 0,
+            isActivated: 0,
+        };
         this.pathUnlocks = [];
+        this.damagedFade = { r: 200, g: 20, b: 60 };
     }
 
     setPath(vertexes) {
@@ -647,11 +667,16 @@ class Rail {
         this.pathUnlocks = unlocks;
     }
 
+    update(delta) {
+        this.damagedFade.r = 200 + (40 * Math.sin(new Date().getTime() / 100));
+    }
+
     draw(context) {
-        if (this.isActivated) {
+        context.strokeStyle = Color.DarkBlue;
+        if (this.isActivated && !this.isDamaged) {
             context.strokeStyle = Color.LightBlue;
-        } else {
-            context.strokeStyle = Color.DarkBlue;
+        } else if (this.isActivated && this.isDamaged) {
+            context.strokeStyle = `rgb(${this.damagedFade.r}, ${this.damagedFade.g}, ${this.damagedFade.b})`;
         }
         // let activeNodeWobble = 2 + (1 * Math.sin(new Date().getTime() / 100));
         let activeNodeWobble = 0;
