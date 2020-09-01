@@ -60,9 +60,11 @@ class OverworldScene {
                     { x: 1536, y: 1024 - 30, node: 10, down: 3, enter: 4 },
                     { x: 1664, y: 896 },
                     { x: 1664, y: 768 },
-                    { x: 1792, y: 640, node: 10, enter: 5, up: 4, down: 5 },
+                    { x: 1792, y: 640, node: 10, enter: 5, up: 4 },
                 ],
-                pathUnlocks: [],
+                pathUnlocks: [
+                    { node: 3, unlock: 6, down: 5 },
+                ],
             },
             {
                 isActivated: false,
@@ -81,7 +83,7 @@ class OverworldScene {
                 isActivated: false,
                 isVisible: false,
                 activationUnlock: 8,
-                visibleUnlock: 5,
+                visibleUnlock: 6,
                 path: [
                     { x: 1792, y: 640 + 30, node: 10, up: 7, enter: 8 },
                     { x: 1920 - 30, y: 768 + 30, },
@@ -123,15 +125,21 @@ class OverworldScene {
         this.camera.x = saveData.camera.x;
         this.camera.y = saveData.camera.y;
 
+        var questData = [
+            { width: 3, height: 3, successRail: 1, successNode: 0 },
+            { width: 3, height: 4, successRail: 0, successNode: 3 },
+            { width: 4, height: 4, successRail: 2, successNode: 0 },
+            { width: 5, height: 4, successRail: 0, successNode: 5 },
+            { width: 5, height: 8, successRail: 3, successNode: 0 },
+            { width: 5, height: 8, successRail: 4, successNode: 0 },
+            { width: 5, height: 4, successRail: 2, successNode: 3 },
+            { width: 5, height: 4, successRail: 2, successNode: 3 },
+        ];
+
         this.quests = [];
-        this.quests.push({ width: 3, height: 3, successRail: 1, successNode: 0 });
-        this.quests.push({ width: 3, height: 4, successRail: 0, successNode: 3 });
-        this.quests.push({ width: 4, height: 4, successRail: 2, successNode: 0 });
-        this.quests.push({ width: 5, height: 4, successRail: 0, successNode: 5 });
-        this.quests.push({ width: 5, height: 8, successRail: 3, successNode: 0 });
-        this.quests.push({ width: 5, height: 8, successRail: 4, successNode: 0 });
-        this.quests.push({ width: 5, height: 4, successRail: 2, successNode: 3 });
-        this.quests.push({ width: 5, height: 4, successRail: 2, successNode: 3 });
+        for (let i = 0; i < questData.length; i++) {
+            this.quests.push(questData[i]);
+        }
 
         this.events = [];
 
@@ -200,7 +208,11 @@ class OverworldScene {
             },
             {
                 lock: 9,
-                dialog: [],
+                dialog: [
+                    { c: 1, s: 1, t: "Fine. Look. You can have this." },
+                    { c: 0, s: 0, t: "Woah! This is what I was looking for!" },
+                    { c: 1, s: 1, t: "It's not what you think. Plus, you still have to get it out of here." },
+                ],
             },
         ];
 
@@ -641,7 +653,8 @@ class Rail {
         } else {
             context.strokeStyle = Color.DarkBlue;
         }
-        let activeNodeWobble = 2 + (1 * Math.sin(new Date().getTime() / 100));
+        // let activeNodeWobble = 2 + (1 * Math.sin(new Date().getTime() / 100));
+        let activeNodeWobble = 0;
         for (let i = 0; i < this.vertexes.length - 1; i++) {
             let vertex = this.vertexes[i];
             let nextVertex = this.vertexes[i + 1];

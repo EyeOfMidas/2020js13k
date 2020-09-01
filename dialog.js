@@ -90,7 +90,7 @@ class Dialog {
 
     drawTextLine(text, context, line) {
         let bounds = context.measureText(text);
-        let textHeight = Math.max(this.fontSize, bounds.actualBoundingBoxAscent + bounds.actualBoundingBoxDescent);
+        let textHeight = Math.max(Math.ceil(this.fontSize), bounds.actualBoundingBoxAscent + bounds.actualBoundingBoxDescent);
         context.fillText(text, this.padding.left, this.padding.top + (line * textHeight));
     }
 

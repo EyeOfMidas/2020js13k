@@ -5,7 +5,7 @@ class MenuScene {
     }
 
     init() {
-        this.playButton = new Button(canvas.width / 2, canvas.height / 2, "Play", () => {
+        this.playButton = new Button(canvas.width / 2, canvas.height / 2, "Start", () => {
             changeState(1);
         });
         this.deleteSave = new Button(canvas.width / 2, canvas.height - 100, "Delete Save", () => {
@@ -36,9 +36,9 @@ class MenuScene {
         context.fillStyle = Color.LightBlue;
         context.textAlign = "center";
         context.font = "48px Trebuchet MS";
-        context.fillText("404", canvas.width / 2, (canvas.height / 4));
-        context.font = "18px Trebuchet MS";
-        context.fillText("Theme (not) Found", canvas.width / 2, (canvas.height / 4) + 20);
+        context.fillText("P4ck3t", canvas.width / 2, (canvas.height / 4));
+        context.font = "22px Trebuchet MS";
+        context.fillText("A js13k game entry", canvas.width / 2, (canvas.height / 4) + 30);
         this.playButton.draw(context);
         this.deleteSave.draw(context);
     }
@@ -114,6 +114,11 @@ class Button {
         if (this.isHovered) {
             context.fillStyle = this.buttonHoverColor;
         }
+        context.textAlign = "center";
+        context.font = `${this.fontSize}px ${this.fontFamily}`;
+        let bounds = context.measureText(this.text);
+        this.width = Math.max(this.width, bounds.width + 8);
+
         context.save();
         context.translate(this.x, this.y);
         context.beginPath();
@@ -123,8 +128,7 @@ class Button {
         if (this.isHovered) {
             context.fillStyle = this.textHoverColor;
         }
-        context.textAlign = "center";
-        context.font = `${this.fontSize}px ${this.fontFamily}`;
+
         context.fillText(this.text, 0, this.fontSize / 3);
         context.restore();
 
