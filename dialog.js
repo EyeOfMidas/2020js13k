@@ -9,7 +9,7 @@ class Dialog {
         this.portrait = { width: 100, height: 128 };
         this.portraitFloat = 16;
         this.side = 0;
-        this.text = "This is a dialog box. I can make it pretty long to see if it would wrap. On a large screen, this takes a lot of text to do. Surprisingly, I can fit quite a bit of text.";
+        this.text = "";
 
         this.characters = [];
         this.characters.push(new HeroCharacter());
@@ -57,7 +57,7 @@ class Dialog {
         if (this.side == 1) {
             context.save();
             context.translate(this.width - (this.margin.left + this.margin.right + this.portrait.width), - this.portrait.height - this.portraitFloat);
-            context.fillStyle = "rgba(0, 0, 0, 0.5)";
+            context.fillStyle = Color.TransparentBlack;
             context.beginPath();
             context.rect(0, 0, this.portrait.width, this.portrait.height);
             context.fill();
@@ -65,12 +65,12 @@ class Dialog {
             context.restore();
         }
 
-        context.fillStyle = "rgba(0, 0, 0, 0.5)";
+        context.fillStyle = Color.TransparentBlack;
         context.beginPath();
         context.rect(0, 0, this.width - (this.margin.left + this.margin.right), this.height - this.margin.bottom);
         context.fill();
 
-        context.fillStyle = "white";
+        context.fillStyle = Color.White;
         context.textAlign = "left";
         context.font = `${this.fontSize}px Arial`;
 
@@ -133,8 +133,8 @@ class HeroCharacter {
                 context.rect(10, 20, 80, 80);
                 context.fill();
 
-                context.strokeStyle = "black";
-                context.fillStyle = "black";
+                context.strokeStyle = Color.Black;
+                context.fillStyle = Color.Black;
                 context.lineWidth = 6;
                 context.beginPath();
                 context.arc(25, 50, 10, Math.PI, 2 * Math.PI);
@@ -163,7 +163,7 @@ class VillainCharacter {
         switch (this.currentMood) {
             case 1:
             default:
-                context.fillStyle = "gray";
+                context.fillStyle = Color.Gray;
                 context.beginPath();
                 context.arc(20, 35, 10, Math.PI / 2, 3 * Math.PI / 2);
                 context.rect(20, 25, 60, 20);
@@ -185,7 +185,7 @@ class VillainCharacter {
                 context.arc(80, 95, 10, 3 * Math.PI / 2, Math.PI / 2);
                 context.fill();
 
-                context.fillStyle = "black";
+                context.fillStyle = Color.Black;
                 context.beginPath();
                 context.moveTo(30, 40);
                 context.lineTo(45, 50);
@@ -223,8 +223,8 @@ class SplashText {
         this.textColor = Color.LightBlue;
         this.x = x;
         this.y = y;
-        this.width = size.width ? size.width : 400;
-        this.height = size.height ? size.height : 100;
+        this.width = size && size.width ? size.width : 400;
+        this.height = size && size.height ? size.height : 100;
         this.center = { x: this.width / 2, y: this.height / 2 };
         this.text = text;
         this.fontSize = 48;
@@ -242,10 +242,8 @@ class SplashText {
         context.font = `${this.fontSize}px Arial`;
         let textBounds = context.measureText(this.text);
 
-        if (textBounds.width > this.width) {
-            this.width = textBounds.width;
-            this.center.x = this.width / 2;
-        }
+        this.width = Math.min(canvas.width - 100, Math.max(this.width, textBounds.width));
+        this.center.x = this.width / 2;
 
         context.fillStyle = Color.Black;
         context.beginPath();

@@ -62,10 +62,10 @@ class OverworldScene {
                     { x: 1536, y: 1024 - 30, node: 10, down: { width: 5, height: 4, successRail: 0, successNode: 5 }, enter: 4 },
                     { x: 1664, y: 896 },
                     { x: 1664, y: 768 },
-                    { x: 1792, y: 640, node: 10, enter: 5, up: { width: 5, height: 8, successRail: 3, successNode: 0 } },
+                    { x: 1792, y: 640, node: 10, enter: 5, up: { width: 4, height: 5, successRail: 3, successNode: 0 } },
                 ],
                 pathUnlocks: [
-                    { node: 3, unlock: 6, down: { width: 5, height: 8, successRail: 4, successNode: 0 } },
+                    { node: 3, unlock: 6, down: { width: 4, height: 6, successRail: 4, successNode: 0 } },
                 ],
             },
             {
@@ -139,8 +139,6 @@ class OverworldScene {
 
         this.camera.x = saveData.camera.x;
         this.camera.y = saveData.camera.y;
-
-        this.events = [];
 
         var eventData = [
             {
@@ -218,6 +216,7 @@ class OverworldScene {
             },
         ];
 
+        this.events = [];
         for (let i = 0; i < eventData.length; i++) {
             let data = eventData[i];
             let railEvent = new RailEvent(this, data.lock);
