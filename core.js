@@ -11,6 +11,8 @@ var startDrag = { x: 0, y: 0 };
 var dragDelta = { x: 0, y: 0 };
 var keys = [];
 
+var sound = new MusicNotes();
+
 var states = [];
 states.push(new MenuScene());
 states.push(new OverworldScene());

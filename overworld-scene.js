@@ -283,7 +283,6 @@ class OverworldScene {
             this.dialog.update(delta);
 
             if (keys[KeyCode.Space] || keys[KeyCode.Enter]) {
-                this.script.shift();
                 keys[KeyCode.Space] = false;
                 keys[KeyCode.Enter] = false;
             }
@@ -554,7 +553,7 @@ class OverworldScene {
             return;
         }
         if (this.script.length > 0) {
-            this.script.shift();
+            this.advanceScript();
             return;
         }
 
@@ -572,6 +571,17 @@ class OverworldScene {
                 this.jumpDownRail();
             } else if (this.camera.y + event.clientY < this.player.y) {
                 this.jumpUpRail();
+            }
+        }
+    }
+
+    advanceScript() {
+        this.script.shift();
+        if (this.script.length > 0) {
+            if (this.script[0].character == 0) {
+                sound.playPingSequence(["C6", "C7", "E6", "E7"], 100, 1);
+            } else {
+                sound.playPingSequence(["C4", "F3", "A3", "D3"], 100, 1);
             }
         }
     }
@@ -766,6 +776,11 @@ class RailEvent {
             return;
         }
         this.container.script = this.container.script.concat(this.script);
+        if (this.container.script[0].character == 0) {
+            sound.playPingSequence(["C6", "C7", "E6", "E7"], 100, 1);
+        } else {
+            sound.playPingSequence(["C4", "F3", "A3", "D3"], 100, 1);
+        }
         saveData.unlocked.push(this.lock);
     }
 }
