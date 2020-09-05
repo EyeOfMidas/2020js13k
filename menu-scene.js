@@ -33,6 +33,7 @@ class MenuScene {
         this.deleteSave.update(delta);
     }
     draw(context) {
+        this.drawBackground(context);
         context.fillStyle = Color.LightBlue;
         context.textAlign = "center";
         context.font = "48px Trebuchet MS";
@@ -42,6 +43,23 @@ class MenuScene {
         context.fillText("by EyeOfMidas", canvas.width / 2, (canvas.height / 4) + 60);
         this.playButton.draw(context);
         this.deleteSave.draw(context);
+    }
+
+    drawBackground(context) {
+        context.fillStyle = Color.VeryDarkBlue;
+
+        for (let y = 0; y < canvas.height / 128; y++) {
+            for (let x = 0; x < canvas.width / 128; x++) {
+                let wobble = (Math.sin((x * 45) + new Date().getTime() / 500));
+                context.save();
+                context.translate(x * 128 + (10 * wobble), y * 128 + (20 * wobble));
+                context.rotate(45 * (Math.PI / 180));
+                context.beginPath();
+                context.rect(-(wobble) - 4, -(wobble) - 4, 2 * wobble + 8, 2 * wobble + 8);
+                context.fill();
+                context.restore();
+            }
+        }
     }
 
     onResize() {

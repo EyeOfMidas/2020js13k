@@ -201,11 +201,30 @@ class PuzzleScene {
         }
     }
     draw(context) {
+        this.drawBackground(context);
+
         for (let tileIndex in this.tiles) {
             this.tiles[tileIndex].draw(context);
         }
         if (this.isWon) {
             this.splashText.draw(context);
+        }
+    }
+
+    drawBackground(context) {
+        context.fillStyle = Color.VeryDarkBlue;
+
+        for (let y = 0; y < canvas.height / 128; y++) {
+            for (let x = 0; x < canvas.width / 128; x++) {
+                let wobble = (Math.sin((x * 45) + new Date().getTime() / 500));
+                context.save();
+                context.translate(x * 128 + (10 * wobble), y * 128 + (20 * wobble));
+                context.rotate(45 * (Math.PI / 180));
+                context.beginPath();
+                context.rect(-(wobble) - 4, -(wobble) - 4, 2 * wobble + 8, 2 * wobble + 8);
+                context.fill();
+                context.restore();
+            }
         }
     }
 

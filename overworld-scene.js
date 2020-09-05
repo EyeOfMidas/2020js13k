@@ -349,13 +349,18 @@ class OverworldScene {
     }
 
     drawBackground(context) {
-        context.fillStyle = "#404040";
-        context.lineWidth = 3;
-        for (let y = 0; y < Math.floor(this.area.height / 128); y++) {
-            for (let x = 0; x < Math.floor(this.area.width / 128); x++) {
+        context.fillStyle = Color.VeryDarkBlue;
+
+        for (let y = 0; y < this.area.height / 128; y++) {
+            for (let x = 0; x < this.area.width / 128; x++) {
+                let wobble = (Math.sin((x * 45) + new Date().getTime() / 1000));
+                context.save();
+                context.translate(x * 128 + (5 * wobble), y * 128 + (10 * wobble));
+                context.rotate(45 * (Math.PI / 180));
                 context.beginPath();
-                context.rect(x * 128, y * 128, 128, 128);
+                context.rect(-(wobble) - 4, -(wobble) - 4, 2 * wobble + 8, 2 * wobble + 8);
                 context.fill();
+                context.restore();
             }
         }
     }
