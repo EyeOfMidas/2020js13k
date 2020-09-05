@@ -37,10 +37,10 @@ class MenuScene {
         context.fillStyle = Color.LightBlue;
         context.textAlign = "center";
         context.font = "48px Trebuchet MS";
-        context.fillText("P4ck3t", canvas.width / 2, (canvas.height / 4));
+        context.fillText("P4ck3t", canvas.width / 2, Math.max(70, (canvas.height / 4)));
         context.font = "22px Trebuchet MS";
-        context.fillText("A js13k game entry", canvas.width / 2, (canvas.height / 4) + 30);
-        context.fillText("by EyeOfMidas", canvas.width / 2, (canvas.height / 4) + 60);
+        context.fillText("A js13k game entry", canvas.width / 2, Math.max(100, (canvas.height / 4) + 30));
+        context.fillText("by EyeOfMidas", canvas.width / 2, Math.max(130, (canvas.height / 4) + 60));
         this.playButton.draw(context);
         this.deleteSave.draw(context);
     }
@@ -64,9 +64,9 @@ class MenuScene {
 
     onResize() {
         this.playButton.x = canvas.width / 2;
-        this.playButton.y = canvas.height / 2;
+        this.playButton.y = Math.max(200, canvas.height / 2);
         this.deleteSave.x = canvas.width / 2;
-        this.deleteSave.y = canvas.height - 100;
+        this.deleteSave.y = Math.max(333, canvas.height - 100);
     }
 
     onMouseMove(event) {
