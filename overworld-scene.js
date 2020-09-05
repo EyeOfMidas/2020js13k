@@ -276,6 +276,8 @@ class OverworldScene {
             changeState(0);
         }
 
+        this.updateBackground(delta);
+
         if (this.script.length > 0) {
             this.dialog.display(this.script[0].character, this.script[0].side, this.script[0].text);
             this.dialog.update(delta);
@@ -334,15 +336,23 @@ class OverworldScene {
         }
     }
 
+    updateBackground(delta) {
+    }
+
     drawBackground(context) {
         context.fillStyle = Color.VeryDarkBlue;
 
         for (let y = 0; y < this.area.height / 128; y++) {
             for (let x = 0; x < this.area.width / 128; x++) {
                 let wobble = (Math.sin((x * 45) + new Date().getTime() / 1000));
+                if (saveData.unlocked.includes(9)) {
+                    wobble = (Math.sin((x * 45) + new Date().getTime() / 200));
+                    context.fillStyle = `rgb(${140 + (20 * wobble)}, 20, 60)`;
+                }
                 context.save();
                 context.translate(x * 128 + (5 * wobble), y * 128 + (10 * wobble));
                 context.rotate(45 * (Math.PI / 180));
+
                 context.beginPath();
                 context.rect(-(wobble) - 4, -(wobble) - 4, 2 * wobble + 8, 2 * wobble + 8);
                 context.fill();

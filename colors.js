@@ -10,3 +10,4 @@ Color.White = "#FFFFFF";
 Color.Black = "#000000";
 Color.DarkestGray = "#202020";
 Color.TransparentBlack = "rgba(0, 0, 0, 0.5)";
+Color.DarkRed = "rgba(200, 20, 60)";
