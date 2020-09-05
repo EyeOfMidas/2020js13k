@@ -253,8 +253,12 @@ class OverworldScene {
             for (let j = 0; j < rail.pathUnlocks.length; j++) {
                 let pathUnlock = rail.pathUnlocks[j];
                 if (saveData.unlocked.includes(pathUnlock.unlock)) {
-                    rail.vertexes[pathUnlock.node].up = pathUnlock.up;
-                    rail.vertexes[pathUnlock.node].down = pathUnlock.down;
+                    if (pathUnlock.hasOwnProperty("up")) {
+                        rail.vertexes[pathUnlock.node].up = pathUnlock.up;
+                    }
+                    if (pathUnlock.hasOwnProperty("down")) {
+                        rail.vertexes[pathUnlock.node].down = pathUnlock.down;
+                    }
                 }
             }
         }
