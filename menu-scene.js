@@ -39,6 +39,7 @@ class MenuScene {
         context.fillText("P4ck3t", canvas.width / 2, (canvas.height / 4));
         context.font = "22px Trebuchet MS";
         context.fillText("A js13k game entry", canvas.width / 2, (canvas.height / 4) + 30);
+        context.fillText("by EyeOfMidas", canvas.width / 2, (canvas.height / 4) + 60);
         this.playButton.draw(context);
         this.deleteSave.draw(context);
     }

@@ -130,7 +130,7 @@ class OverworldScene {
             width: 20,
             height: 20,
             center: { x: 10, y: 10 },
-            angle: 90 * Math.PI / 180,
+            angle: 45 * Math.PI / 180,
             rotationSpeed: 3 * Math.PI / 180,
             movementSpeed: 3,
             target: { x: currentNode.x, y: currentNode.y },
