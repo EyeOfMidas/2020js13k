@@ -44,6 +44,16 @@ class PuzzleScene {
         this.buildPath();
 
         this.splashText = new SplashText("Connected!", - canvas.width - 200, canvas.height / 2);
+        this.cancelPuzzle = new Button(canvas.width - 100, 50, "Back", () => {
+            changeState(1);
+        });
+        this.cancelPuzzle.width = 100;
+        this.cancelPuzzle.height = 40;
+        this.cancelPuzzle.fontSize = 18;
+        this.cancelPuzzle.buttonColor = Color.LightGray;
+        this.cancelPuzzle.buttonHoverColor = Color.DarkGray;
+        this.cancelPuzzle.textColor = Color.DarkGray;
+        this.cancelPuzzle.textHoverColor = Color.White;
     }
 
     buildPath() {
@@ -199,6 +209,8 @@ class PuzzleScene {
             });
 
         }
+
+        this.cancelPuzzle.update(delta);
     }
     draw(context) {
         this.drawBackground(context);
@@ -208,6 +220,8 @@ class PuzzleScene {
         }
         if (this.isWon) {
             this.splashText.draw(context);
+        } else {
+            this.cancelPuzzle.draw(context);
         }
     }
 
@@ -271,6 +285,10 @@ class PuzzleScene {
             clickedTile.targetRadians += 90 * (Math.PI / 180);
             clickedTile.targetRadians %= (360 * (Math.PI / 180));
         }
+        if (this.cancelPuzzle.isMouseOver(event)) {
+            this.cancelPuzzle.triggerHandler();
+            document.body.style.cursor = "default";
+        }
     }
 
     onMouseMove(event) {
@@ -280,11 +298,25 @@ class PuzzleScene {
         for (let tileIndex in this.tiles) {
             this.tiles[tileIndex].isHovered = false;
         }
+        this.cancelPuzzle.isHovered = false;
+        document.body.style.cursor = "default";
+        if (this.cancelPuzzle.isMouseOver(event)) {
+            this.cancelPuzzle.isHovered = true;
+            document.body.style.cursor = "pointer";
+        }
 
         let hoveredTile = this.tiles.find(tile => tile.isMouseOver(event));
 
         if (hoveredTile) {
             hoveredTile.isHovered = true;
+        }
+    }
+
+    onTouchEnd(event) {
+        if (this.cancelPuzzle.isTouchOver(event)) {
+            event.preventDefault();
+            this.cancelPuzzle.triggerHandler();
+            document.body.style.cursor = "default";
         }
     }
 
