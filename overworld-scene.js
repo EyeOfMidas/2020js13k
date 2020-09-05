@@ -4,7 +4,6 @@ class OverworldScene {
         this.camera = {};
         this.area = {};
         this.player = {};
-        this.quests = [];
         this.rails = [];
         this.events = [];
         this.script = [];
@@ -31,12 +30,12 @@ class OverworldScene {
                     { x: 896, y: 1024, node: 10, enter: 0 },
                     { x: 1024, y: 1024 },
                     { x: 1152, y: 1152 },
-                    { x: 1280, y: 1152, node: 10, down: 0, enter: 1 },
+                    { x: 1280, y: 1152, node: 10, down: { width: 3, height: 3, successRail: 1, successNode: 0 }, enter: 1 },
                     { x: 1408, y: 1024 },
                     { x: 1536, y: 1024, node: 10 },
                 ],
                 pathUnlocks: [
-                    { node: 5, unlock: 3, up: 2 },
+                    { node: 5, unlock: 3, up: { width: 4, height: 4, successRail: 2, successNode: 0 } },
                 ],
             },
             {
@@ -46,7 +45,7 @@ class OverworldScene {
                     isDamaged: 9,
                 },
                 path: [
-                    { x: 1280, y: 1152 + 30, node: 10, up: 1, enter: 2 },
+                    { x: 1280, y: 1152 + 30, node: 10, up: { width: 3, height: 4, successRail: 0, successNode: 3 }, enter: 2 },
                     { x: 1408, y: 1152 + 30 },
                     { x: 1536, y: 1280 },
                     { x: 1664, y: 1280, node: 10, enter: 3 },
@@ -60,13 +59,13 @@ class OverworldScene {
                     isDamaged: 9,
                 },
                 path: [
-                    { x: 1536, y: 1024 - 30, node: 10, down: 3, enter: 4 },
+                    { x: 1536, y: 1024 - 30, node: 10, down: { width: 5, height: 4, successRail: 0, successNode: 5 }, enter: 4 },
                     { x: 1664, y: 896 },
                     { x: 1664, y: 768 },
-                    { x: 1792, y: 640, node: 10, enter: 5, up: 4 },
+                    { x: 1792, y: 640, node: 10, enter: 5, up: { width: 5, height: 8, successRail: 3, successNode: 0 } },
                 ],
                 pathUnlocks: [
-                    { node: 3, unlock: 6, down: 5 },
+                    { node: 3, unlock: 6, down: { width: 5, height: 8, successRail: 4, successNode: 0 } },
                 ],
             },
             {
@@ -76,7 +75,7 @@ class OverworldScene {
                     isDamaged: 9,
                 },
                 path: [
-                    { x: 1792, y: 640 - 30, node: 10, enter: 6, down: 6 },
+                    { x: 1792, y: 640 - 30, node: 10, enter: 6, down: { width: 5, height: 4, successRail: 2, successNode: 3 } },
                     { x: 1920, y: 768, },
                     { x: 2048, y: 768 },
                     { x: 2176, y: 896, node: 10, enter: 7 },
@@ -90,7 +89,7 @@ class OverworldScene {
                     isDamaged: 9,
                 },
                 path: [
-                    { x: 1792, y: 640 + 30, node: 10, up: 7, enter: 8 },
+                    { x: 1792, y: 640 + 30, node: 10, up: { width: 5, height: 4, successRail: 2, successNode: 3 }, enter: 8 },
                     { x: 1920 - 30, y: 768 + 30, },
                     { x: 2048, y: 768 + 30 },
                     { x: 2176, y: 896 + 30 },
@@ -98,7 +97,7 @@ class OverworldScene {
                     { x: 2432, y: 1024, node: 10, enter: 9 },
                 ],
                 pathUnlocks: [
-                    { node: 5, unlock: 9, down: 8 },
+                    { node: 5, unlock: 9, down: { width: 5, height: 4, successRail: 2, successNode: 3 } },
                 ],
             },
             {
@@ -140,22 +139,6 @@ class OverworldScene {
 
         this.camera.x = saveData.camera.x;
         this.camera.y = saveData.camera.y;
-
-        var questData = [
-            { width: 3, height: 3, successRail: 1, successNode: 0 },
-            { width: 3, height: 4, successRail: 0, successNode: 3 },
-            { width: 4, height: 4, successRail: 2, successNode: 0 },
-            { width: 5, height: 4, successRail: 0, successNode: 5 },
-            { width: 5, height: 8, successRail: 3, successNode: 0 },
-            { width: 5, height: 8, successRail: 4, successNode: 0 },
-            { width: 5, height: 4, successRail: 2, successNode: 3 },
-            { width: 5, height: 4, successRail: 2, successNode: 3 },
-        ];
-
-        this.quests = [];
-        for (let i = 0; i < questData.length; i++) {
-            this.quests.push(questData[i]);
-        }
 
         this.events = [];
 
@@ -508,7 +491,7 @@ class OverworldScene {
     jumpUpRail() {
         let currentRailNode = this.getRailNode(this.player.rail, this.player.railnode);
         if (null != currentRailNode.up) {
-            let quest = this.quests[currentRailNode.up];
+            let quest = currentRailNode.up;
             puzzleRules = quest;
             this.saveScene();
             changeState(2);
@@ -518,7 +501,7 @@ class OverworldScene {
     jumpDownRail() {
         let currentRail = this.getRailNode(this.player.rail, this.player.railnode);
         if (null != currentRail.down) {
-            let quest = this.quests[currentRail.down];
+            let quest = currentRail.down;
             puzzleRules = quest;
             this.saveScene();
             changeState(2);
