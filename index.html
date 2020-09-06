@@ -25,7 +25,6 @@
         #game {
             width: 100%;
             height: 100%;
-
         }
 
         #debugger-output {
@@ -35,12 +34,33 @@
             left: 0;
             width: 100%;
         }
+
+        #endgame {
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            padding: 4px;
+            display: none;
+        }
+
+        #endgame--footer {
+            position: absolute;
+            bottom: 0;
+            text-align: center;
+            width: 100%;
+        }
     </style>
 </head>
 
 <body>
     <div id="debugger-output"></div>
     <div id="game"></div>
+    <div id="endgame">
+        <h1>404: Page Not Found</h1>
+        <p>This server has been decommissioned.</p>
+        <p>Please reload if you want to make the request again.</p>
+        <p id="endgame--footer">P4ck3t: a js13k game submission by EyeOfMidas</p>
+    </div>
     <!-- <script src="./min.js"></script> -->
     <script src="./KeyCode.js"></script>
     <script src="./manualtween.js"></script>
