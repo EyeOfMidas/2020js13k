@@ -103,12 +103,26 @@ class OverworldScene {
             {
                 unlocks: {
                     isVisible: 9,
-                    isActivated: 10,
+                    isActivated: 9,
+                    isDamaged: 10,
                 },
                 path: [
-                    { x: 2176, y: 1152, node: 10 },
+                    { x: 2176, y: 1152, node: 10, enter: 10 },
                     { x: 2304, y: 1024 + 30, },
-                    { x: 2432, y: 1024 + 30, node: 10, enter: 8 },
+                    { x: 2432, y: 1024 + 30, node: 10 },
+                ],
+                pathUnlocks: [],
+            },
+            {
+                unlocks: {
+                    isVisible: 9,
+                    isActivated: 9,
+                },
+                path: [
+                    { x: 1792, y: 1280, node: 10 },
+                    { x: 1920, y: 1280 },
+                    { x: 2048, y: 1152 },
+                    { x: 2176, y: 1152, node: 10 },
                 ],
                 pathUnlocks: [],
             },
@@ -217,6 +231,15 @@ class OverworldScene {
                     { c: 1, s: 1, t: "It's not what you think. Plus, you still have to get it out of here." },
                 ],
                 teleport: { rail: 5, node: 3, x: 2432, y: 1054 },
+            },
+            {
+                lock: 10,
+                dialog: [
+                    { c: 1, s: 1, t: "Uh oh. Things are shutting down." },
+                    { c: 0, s: 0, t: "Oh no! What should I do?!" },
+                    { c: 1, s: 1, t: "Just get out of here. I might not see you again." },
+                ],
+                teleport: { rail: 6, node: 3, x: 2176, y: 1152 },
             },
         ];
 
