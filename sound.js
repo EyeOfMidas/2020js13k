@@ -141,32 +141,40 @@ class MusicNotes {
             'B7': 3951.07,
             'C8': 4186.01
         }
+        this.audioContext = new (window.AudioContext || window.webkitAudioContext)({
+            latencyHint: "interactive",
+            sampleRate: 48000
+        });
+        this.volume = 75;
     }
-    playPing(note, end = 0.5) {
+
+    playPing(note, start = 0, notelength = 0.5) {
         if (this.isMuted) {
             return;
         }
-        var context = new AudioContext();
-        var oscillatorNode = context.createOscillator();
+        let buffer = this.audioContext.createBuffer(2, this.audioContext.sampleRate * 3, this.audioContext.sampleRate);
+
+        let oscillatorNode = this.audioContext.createOscillator();
+        oscillatorNode.buffer = buffer;
         oscillatorNode.type = "sine";
         oscillatorNode.frequency.value = this.frequencyLookup[note];
 
-        var gainNode = context.createGain();
-        gainNode.gain.exponentialRampToValueAtTime(0.00001, end);
+        let gainNode = this.audioContext.createGain();
+        gainNode.gain.setValueAtTime(this.volume / 100, this.audioContext.currentTime + start);
         oscillatorNode.connect(gainNode);
+        gainNode.connect(this.audioContext.destination);
 
-        gainNode.connect(context.destination);
-        oscillatorNode.start();
-        setTimeout(() => {
-            context.close();
-        }, end * 1000);
+        oscillatorNode.start(this.audioContext.currentTime + start);
+
+        gainNode.gain.exponentialRampToValueAtTime(0.00001, this.audioContext.currentTime + start + notelength);
+        oscillatorNode.stop(this.audioContext.currentTime + start + notelength);
     }
 
-    playPingSequence(sequence, between, end = 0.5) {
+    playPingSequence(sequence, between, notelength = 0.5) {
         let delay = 0;
         for (let i = 0; i < sequence.length; i++) {
-            setTimeout(() => { this.playPing(sequence[i], end); }, delay);
-            delay += between;
+            this.playPing(sequence[i], delay, notelength);
+            delay += (between / 1000);
         }
     }
 }

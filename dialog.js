@@ -148,6 +148,9 @@ class HeroCharacter {
                 break;
         }
     }
+    speak() {
+        sound.playPingSequence(["C6", "C7", "E6", "E7"], 100, 1);
+    }
 }
 
 class VillainCharacter {
@@ -208,12 +211,17 @@ class VillainCharacter {
                 break;
         }
     }
+    speak() {
+        sound.playPingSequence(["C4", "F3", "A3", "D3"], 100, 1);
+    }
 }
 
 class EmptyCharacter {
     constructor() {
     }
     draw(context) {
+    }
+    speak() {
     }
 }
 

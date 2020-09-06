@@ -578,11 +578,7 @@ class OverworldScene {
     advanceScript() {
         this.script.shift();
         if (this.script.length > 0) {
-            if (this.script[0].character == 0) {
-                sound.playPingSequence(["C6", "C7", "E6", "E7"], 100, 1);
-            } else {
-                sound.playPingSequence(["C4", "F3", "A3", "D3"], 100, 1);
-            }
+            this.dialog.characters[this.script[0].character].speak();
         }
     }
 
@@ -776,11 +772,8 @@ class RailEvent {
             return;
         }
         this.container.script = this.container.script.concat(this.script);
-        if (this.container.script[0].character == 0) {
-            sound.playPingSequence(["C6", "C7", "E6", "E7"], 100, 1);
-        } else {
-            sound.playPingSequence(["C4", "F3", "A3", "D3"], 100, 1);
-        }
+        this.container.dialog.characters[this.script[0].character].speak();
+
         saveData.unlocked.push(this.lock);
     }
 }
