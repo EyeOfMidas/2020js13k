@@ -202,6 +202,7 @@ class PuzzleScene {
             saveData.player.rail = puzzleRules.successRail;
             saveData.player.railnode = puzzleRules.successNode;
             saveGame();
+            sound.playPingSequence(["E6", "C6", "C6", "C6", "C7"], 75);
             this.splashTextTweenId = Tween.create(this.splashText, { x: canvas.width / 2 }, 2000, Tween.Easing.Elastic.EaseOut, () => {
                 setTimeout(() => {
                     changeState(1);
@@ -284,6 +285,7 @@ class PuzzleScene {
             this.tiles.push(clickedTile);
             clickedTile.targetRadians += 90 * (Math.PI / 180);
             clickedTile.targetRadians %= (360 * (Math.PI / 180));
+            sound.playPing("C6", 0, 0.1);
         }
         if (this.cancelPuzzle.isMouseOver(event)) {
             this.cancelPuzzle.triggerHandler();

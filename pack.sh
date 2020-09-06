@@ -17,4 +17,4 @@ fi
 #npm -g install terser webpack terser-webpack-plugin
 terser --compress --mangle toplevel --output min.js -- pack.js
 zip game.zip min.js index.html
-ls -lah game.zip
+ls -la game.zip

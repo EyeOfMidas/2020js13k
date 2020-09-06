@@ -23,6 +23,7 @@ var saveData = {
     player: { rail: 0, railnode: 0 },
     camera: { x: 1280, y: 1280 },
     unlocked: [],
+    mute: false,
 };
 
 var puzzleRules = { width: 0, height: 0, successRail: 0, successNode: 0 };

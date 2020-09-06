@@ -270,8 +270,6 @@ class OverworldScene {
 
     update(delta) {
         if (keys[KeyCode.Esc]) {
-            this.player.rail = 0;
-            this.player.railnode = 0;
             this.saveScene();
             changeState(0);
         }
@@ -772,7 +770,9 @@ class RailEvent {
             return;
         }
         this.container.script = this.container.script.concat(this.script);
-        this.container.dialog.characters[this.script[0].character].speak();
+        if (this.container.script.length > 0) {
+            this.container.dialog.characters[this.script[0].character].speak();
+        }
 
         saveData.unlocked.push(this.lock);
     }

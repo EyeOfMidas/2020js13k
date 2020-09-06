@@ -2,9 +2,13 @@ class MenuScene {
 
     constructor() {
         this.playButton = null;
+        this.deleteSave = null;
+        this.muteButton = null;
     }
 
     init() {
+        loadGame();
+
         this.playButton = new Button(canvas.width / 2, canvas.height / 2, "Start", () => {
             changeState(1);
         });
@@ -18,11 +22,32 @@ class MenuScene {
         this.deleteSave.width = 100;
         this.deleteSave.height = 40;
         this.deleteSave.fontSize = 18;
-        this.deleteSave.fontFamily = "Trebuchet MS";
         this.deleteSave.buttonColor = Color.LightGray;
         this.deleteSave.buttonHoverColor = "crimson";
         this.deleteSave.textColor = Color.DarkGray;
         this.deleteSave.textHoverColor = Color.White;
+
+        let startIcon = saveData.mute ? "🔇" : "🔈";
+        this.muteButton = new Button(canvas.width - 50, 50, startIcon, () => {
+            if (saveData.mute) {
+                console.log("was muted, now unmuting");
+                this.muteButton.text = "🔈";
+                saveData.mute = !saveData.mute;
+            } else {
+                console.log("was not muted, now muting");
+                this.muteButton.text = "🔇";
+                saveData.mute = !saveData.mute;
+            }
+            saveGame();
+            sound.isMuted = saveData.mute;
+        });
+        this.muteButton.width = 20;
+        this.muteButton.height = 28;
+        this.muteButton.fontSize = 18;
+        this.muteButton.buttonColor = "transparent";
+        this.muteButton.buttonHoverColor = Color.LightGray;
+
+        sound.isMuted = saveData.mute;
     }
 
     update(delta) {
@@ -31,6 +56,7 @@ class MenuScene {
         }
         this.playButton.update(delta);
         this.deleteSave.update(delta);
+        this.muteButton.update(delta);
     }
     draw(context) {
         this.drawBackground(context);
@@ -43,6 +69,7 @@ class MenuScene {
         context.fillText("by EyeOfMidas", canvas.width / 2, Math.max(130, (canvas.height / 4) + 60));
         this.playButton.draw(context);
         this.deleteSave.draw(context);
+        this.muteButton.draw(context);
     }
 
     drawBackground(context) {
@@ -67,6 +94,8 @@ class MenuScene {
         this.playButton.y = Math.max(200, canvas.height / 2);
         this.deleteSave.x = canvas.width / 2;
         this.deleteSave.y = Math.max(333, canvas.height - 100);
+        this.muteButton.x = canvas.width - 50;
+        this.muteButton.y = 50;
     }
 
     onMouseMove(event) {
@@ -81,6 +110,11 @@ class MenuScene {
             this.deleteSave.isHovered = true;
             document.body.style.cursor = "pointer";
         }
+        this.muteButton.isHovered = false;
+        if (this.muteButton.isMouseOver(event)) {
+            this.muteButton.isHovered = true;
+            document.body.style.cursor = "pointer";
+        }
     }
 
     onMouseUp(event) {
@@ -91,6 +125,10 @@ class MenuScene {
         }
         if (this.deleteSave.isMouseOver(event)) {
             this.deleteSave.triggerHandler();
+            document.body.style.cursor = "default";
+        }
+        if (this.muteButton.isMouseOver(event)) {
+            this.muteButton.triggerHandler();
             document.body.style.cursor = "default";
         }
     }
@@ -104,6 +142,10 @@ class MenuScene {
 
         if (this.deleteSave.isTouchOver(event)) {
             this.deleteSave.triggerHandler();
+            document.body.style.cursor = "default";
+        }
+        if (this.muteButton.isTouchOver(event)) {
+            this.muteButton.triggerHandler();
             document.body.style.cursor = "default";
         }
     }
