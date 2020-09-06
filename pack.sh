@@ -17,4 +17,6 @@ fi
 #npm -g install terser webpack terser-webpack-plugin
 terser --compress --mangle toplevel --output min.js -- pack.js
 zip game.zip min.js index.html
-ls -la game.zip
+SIZE=`ls -la game.zip | awk '{print $5}'`
+PERCENT=`expr \( $SIZE \* 100 \) / 13312`
+echo $SIZE / 13312 = $PERCENT%
