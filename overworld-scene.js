@@ -375,7 +375,7 @@ class OverworldScene {
             this.dialog.hide();
             if (saveData.unlocked.includes(14)) {
                 this.fadeAmount += 0.01;
-                if (this.fadeAmount >= 1) {
+                if (this.fadeAmount >= 1.5) {
                     changeState(3);
                 }
             }
