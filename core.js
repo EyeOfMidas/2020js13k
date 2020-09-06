@@ -17,145 +17,156 @@ var states = [];
 states.push(new MenuScene());
 states.push(new OverworldScene());
 states.push(new PuzzleScene());
+states.push({
+    init: () => {
+        document.getElementById("game").style.display = "none";
+        document.getElementById("endgame").style.display = "block";
+        deleteGame();
+    },
+    update: (delta) => {
+    },
+    draw: (context) => {
+    }
+});
 var activeState = states[0];
 
 var saveData = {
-	player: { rail: 0, railnode: 0 },
-	camera: { x: 1280, y: 1280 },
-	unlocked: [],
-	mute: false,
+    player: { rail: 0, railnode: 0 },
+    camera: { x: 1280, y: 1280 },
+    unlocked: [],
+    mute: false,
 };
 
 var puzzleRules = { width: 0, height: 0, successRail: 0, successNode: 0 };
 
 function animate() {
-	context.save();
-	context.translate(0.5, 0.5);
-	draw(context);
-	context.restore();
-	requestAnimationFrame(animate);
+    context.save();
+    context.translate(0.5, 0.5);
+    draw(context);
+    context.restore();
+    requestAnimationFrame(animate);
 }
 
 function clearFrame(context) {
-	context.clearRect(0, 0, canvas.width, canvas.height);
+    context.clearRect(0, 0, canvas.width, canvas.height);
 }
 
 function init() {
-	lastTime = new Date().getUTCMilliseconds();
+    lastTime = new Date().getUTCMilliseconds();
 
-	keys = [];
-	for (let i = 0; i < 256; i++) {
-		keys[i] = false;
-	}
+    keys = [];
+    for (let i = 0; i < 256; i++) {
+        keys[i] = false;
+    }
 
-	gameTicks = 0;
+    gameTicks = 0;
 
-	changeState(0);
+    changeState(0);
 }
 
 function changeState(id) {
-	document.getElementById("debugger-output").innerHTML = "";
-	try {
-		states[id].init();
-	} catch (e) {
-		console.error("Something went wrong while changing state:", e);
-		document.getElementById("debugger-output").innerHTML = e.toString();
-		return;
-	}
-	activeState = states[id];
-	onResize();
+    document.getElementById("debugger-output").innerHTML = "";
+    try {
+        states[id].init();
+    } catch (e) {
+        console.error("Something went wrong while changing state:", e);
+        document.getElementById("debugger-output").innerHTML = e.toString();
+        return;
+    }
+    activeState = states[id];
+    onResize();
 }
 
 function update(delta) {
-	activeState.update(delta);
+    activeState.update(delta);
 }
 
 function draw(context) {
-	functionExists(activeState, "clearFrame") ? activeState.clearFrame(context) : clearFrame(context);
-	activeState.draw(context);
+    functionExists(activeState, "clearFrame") ? activeState.clearFrame(context) : clearFrame(context);
+    activeState.draw(context);
 }
 
 function functionExists(obj, method) {
-	return typeof obj[method] == "function";
+    return typeof obj[method] == "function";
 }
 
 function saveGame() {
-	localStorage.setItem("eyeofmidas404", JSON.stringify(saveData));
+    localStorage.setItem("eyeofmidas404", JSON.stringify(saveData));
 }
 
 function loadGame() {
-	let saveString = localStorage.getItem("eyeofmidas404");
-	if (!saveString) {
-		saveGame();
-		saveString = JSON.stringify(saveData);
-	}
-	saveData = JSON.parse(saveString);
+    let saveString = localStorage.getItem("eyeofmidas404");
+    if (!saveString) {
+        saveGame();
+        saveString = JSON.stringify(saveData);
+    }
+    saveData = JSON.parse(saveString);
 }
 
 function deleteGame() {
-	localStorage.removeItem("eyeofmidas404");
+    localStorage.removeItem("eyeofmidas404");
 }
 
 function onResize() {
-	let dpi = window.devicePixelRatio;
-	canvas.width = canvas.clientWidth;
-	canvas.height = canvas.clientHeight;
-	context = canvas.getContext("2d");
-	context.width = canvas.clientWidth / dpi;
-	context.height = canvas.clientHeight / dpi;
+    let dpi = window.devicePixelRatio;
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
+    context = canvas.getContext("2d");
+    context.width = canvas.clientWidth / dpi;
+    context.height = canvas.clientHeight / dpi;
 
-	functionExists(activeState, "onResize") ? activeState.onResize() : null;
+    functionExists(activeState, "onResize") ? activeState.onResize() : null;
 }
 
 function onKeyDown(event) {
-	keys[event.keyCode] = true;
-	functionExists(activeState, "onKeyDown") ? activeState.onKeyDown(event) : null;
+    keys[event.keyCode] = true;
+    functionExists(activeState, "onKeyDown") ? activeState.onKeyDown(event) : null;
 }
 
 function onKeyUp(event) {
-	functionExists(activeState, "onKeyUp") ? activeState.onKeyUp(event) : null;
-	keys[event.keyCode] = false;
+    functionExists(activeState, "onKeyUp") ? activeState.onKeyUp(event) : null;
+    keys[event.keyCode] = false;
 }
 
 function onMouseMove(event) {
-	functionExists(activeState, "onMouseMove") ? activeState.onMouseMove(event) : null;
+    functionExists(activeState, "onMouseMove") ? activeState.onMouseMove(event) : null;
 }
 
 function onMouseDown(event) {
-	functionExists(activeState, "onMouseDown") ? activeState.onMouseDown(event) : null;
+    functionExists(activeState, "onMouseDown") ? activeState.onMouseDown(event) : null;
 }
 
 function onMouseUp(event) {
-	functionExists(activeState, "onMouseUp") ? activeState.onMouseUp(event) : null;
+    functionExists(activeState, "onMouseUp") ? activeState.onMouseUp(event) : null;
 }
 
 function onRightClick(event) {
-	functionExists(activeState, "onRightClick") ? activeState.onRightClick(event) : null;
+    functionExists(activeState, "onRightClick") ? activeState.onRightClick(event) : null;
 }
 
 function onTouchStart(event) {
-	functionExists(activeState, "onTouchStart") ? activeState.onTouchStart(event) : null;
+    functionExists(activeState, "onTouchStart") ? activeState.onTouchStart(event) : null;
 }
 
 function onTouchMove(event) {
-	functionExists(activeState, "onTouchMove") ? activeState.onTouchMove(event) : null;
+    functionExists(activeState, "onTouchMove") ? activeState.onTouchMove(event) : null;
 }
 
 function onTouchEnd(event) {
-	functionExists(activeState, "onTouchEnd") ? activeState.onTouchEnd(event) : null;
+    functionExists(activeState, "onTouchEnd") ? activeState.onTouchEnd(event) : null;
 }
 
 document.addEventListener("DOMContentLoaded", event => {
-	canvas = document.createElement("canvas");
-	document.getElementById("game").appendChild(canvas);
-	init();
-	animate();
+    canvas = document.createElement("canvas");
+    document.getElementById("game").appendChild(canvas);
+    init();
+    animate();
 
-	updateIntervalId = setInterval(() => {
-		let currentTime = new Date().getUTCMilliseconds();
-		update(1 + ((currentTime - lastTime) / 1000));
-		lastTime = currentTime;
-	}, 16);
+    updateIntervalId = setInterval(() => {
+        let currentTime = new Date().getUTCMilliseconds();
+        update(1 + ((currentTime - lastTime) / 1000));
+        lastTime = currentTime;
+    }, 16);
 });
 
 window.addEventListener("resize", onResize);

@@ -7,6 +7,7 @@ class OverworldScene {
         this.rails = [];
         this.events = [];
         this.script = [];
+        this.fadeAmount = 0;
     }
 
     init() {
@@ -372,9 +373,16 @@ class OverworldScene {
             return;
         } else {
             this.dialog.hide();
+            if (saveData.unlocked.includes(14)) {
+                this.fadeAmount += 0.01;
+                if (this.fadeAmount >= 1) {
+                    changeState(3);
+                }
+            }
         }
         this.updatePlayer(delta);
         this.updateRails(delta);
+
     }
     draw(context) {
         context.save();
@@ -385,6 +393,11 @@ class OverworldScene {
         this.drawPlayer(context);
 
         context.restore();
+
+        context.fillStyle = `rgba(0,0,0,${this.fadeAmount})`;
+        context.beginPath();
+        context.rect(0, 0, canvas.width, canvas.height);
+        context.fill();
 
         this.dialog.draw(context);
     }
