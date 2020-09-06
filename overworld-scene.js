@@ -119,10 +119,24 @@ class OverworldScene {
                     isActivated: 9,
                 },
                 path: [
-                    { x: 1792, y: 1280, node: 10 },
+                    { x: 1792, y: 1280, node: 10, down: { width: 6, height: 4, successRail: 7, successNode: 5 } },
                     { x: 1920, y: 1280 },
                     { x: 2048, y: 1152 },
                     { x: 2176, y: 1152, node: 10 },
+                ],
+                pathUnlocks: [],
+            },
+            {
+                unlocks: {
+                    isVisible: 10,
+                    isActivated: 11,
+                },
+                path: [
+                    { x: 1280, y: 1408, node: 10 },
+                    { x: 1408, y: 1408 },
+                    { x: 1536, y: 1280 + 30 },
+                    { x: 1664, y: 1280 + 30 },
+                    { x: 1792, y: 1280 + 30, node: 10 },
                 ],
                 pathUnlocks: [],
             },
