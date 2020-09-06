@@ -322,6 +322,7 @@ class OverworldScene {
             this.dialog.update(delta);
 
             if (keys[KeyCode.Space] || keys[KeyCode.Enter]) {
+                this.advanceScript();
                 keys[KeyCode.Space] = false;
                 keys[KeyCode.Enter] = false;
             }
