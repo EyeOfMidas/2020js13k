@@ -117,9 +117,10 @@ class OverworldScene {
                 unlocks: {
                     isVisible: 9,
                     isActivated: 9,
+                    isDamaged: 11,
                 },
                 path: [
-                    { x: 1792, y: 1280, node: 10, down: { width: 6, height: 4, successRail: 7, successNode: 5 } },
+                    { x: 1792, y: 1280, node: 10, down: { width: 6, height: 4, successRail: 7, successNode: 4 } },
                     { x: 1920, y: 1280 },
                     { x: 2048, y: 1152 },
                     { x: 2176, y: 1152, node: 10 },
@@ -130,13 +131,31 @@ class OverworldScene {
                 unlocks: {
                     isVisible: 10,
                     isActivated: 11,
+                    isDamaged: 13,
                 },
                 path: [
-                    { x: 1280, y: 1408, node: 10 },
+                    { x: 1280, y: 1408, node: 10, enter: 12, up: { width: 0, height: 0, successRail: 8, successNode: 7 } },
                     { x: 1408, y: 1408 },
                     { x: 1536, y: 1280 + 30 },
                     { x: 1664, y: 1280 + 30 },
-                    { x: 1792, y: 1280 + 30, node: 10 },
+                    { x: 1792, y: 1280 + 30, node: 10, enter: 11 },
+                ],
+                pathUnlocks: [],
+            },
+            {
+                unlocks: {
+                    isVisible: 11,
+                    isActivated: 13,
+                },
+                path: [
+                    { x: 384, y: 1536 },
+                    { x: 512, y: 1536 },
+                    { x: 640, y: 1536 },
+                    { x: 768, y: 1536 },
+                    { x: 896, y: 1536 },
+                    { x: 1024, y: 1536, enter: 14 },
+                    { x: 1152, y: 1408 - 50 },
+                    { x: 1280, y: 1408 - 50, node: 20, enter: 13 },
                 ],
                 pathUnlocks: [],
             },
@@ -254,6 +273,30 @@ class OverworldScene {
                     { c: 1, s: 1, t: "Just get out of here. I might not see you again." },
                 ],
                 teleport: { rail: 6, node: 3, x: 2176, y: 1152 },
+            },
+            {
+                lock: 11,
+                dialog: [
+                    { c: 1, s: 1, t: "I'll miss you, you annoying little square." },
+                    { c: 0, s: 0, t: "..." }],
+            },
+            {
+                lock: 12,
+                dialog: [
+                    { c: 0, s: 0, t: "I'm at the end! But this connection is much bigger than most..." },
+                    { c: 0, s: 0, t: "" },
+                    { c: 0, s: 0, t: "... server?" },
+                ],
+            },
+            {
+                lock: 13,
+                dialog: []
+            },
+            {
+                lock: 14,
+                dialog: [
+                    { c: 0, s: 0, t: "Goodbye, server!" },
+                ]
             },
         ];
 
@@ -475,11 +518,11 @@ class OverworldScene {
             let currentNode = this.getRailNode(this.player.rail, this.player.railnode);
             if (!currentNode.node) {
                 this.moveToPreviousNode();
-            } else {
-                if (currentNode.enter != null) {
-                    this.events[currentNode.enter].run();
-                }
             }
+            if (currentNode.enter != null) {
+                this.events[currentNode.enter].run();
+            }
+
         }
         if (nextNode && this.player.x == nextNode.x && this.player.y == nextNode.y) {
             this.player.railnode++;
@@ -487,11 +530,11 @@ class OverworldScene {
             let currentNode = this.getRailNode(this.player.rail, this.player.railnode);
             if (!currentNode.node) {
                 this.moveToNextNode();
-            } else {
-                if (currentNode.enter != null) {
-                    this.events[currentNode.enter].run();
-                }
             }
+            if (currentNode.enter != null) {
+                this.events[currentNode.enter].run();
+            }
+
         }
 
         if (this.player.target.x != this.player.x || this.player.target.y != this.player.y) {
